@@ -7,6 +7,7 @@
 
 #include "colouring_bit_array.h"
 #include <vector>
+#include <stdint.h>
 
 namespace ba_graph {
 

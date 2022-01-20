@@ -1,4 +1,5 @@
 #include "colouring_bit_array_canon.hpp"
+#include "kempe_closed.hpp"
 #include <iostream>
 #include <algorithm>
 #include <utility>
