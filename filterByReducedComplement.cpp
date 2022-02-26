@@ -91,12 +91,15 @@ int main()
     }
 
     std::ofstream reducedComplementCBAFile;
+    std::ofstream reducedComplementCBARawFile;
     reducedComplementCBAFile.open("reducedComplementCBA.txt");
+    reducedComplementCBARawFile.open("reducedComplementCBARaw.txt");
     reducedComplementCBAFile << "ReducedComplementCBA:" << std::endl;
     reducedComplementCBAFile << "Count: " << reducedFeasibleCBAs.size() << std::endl;
     reducedComplementCBAFile << "feasibleCBA | complement | reduced complement" << std::endl;
     for (int i = 0; i < reducedFeasibleCBAs.size(); i++)
     {
+        reducedComplementCBARawFile << numberToBinary(reducedFeasibleCBAs[i]) << std::endl;
         reducedComplementCBAFile << numberToBinary(reducedFeasibleCBAs[i]);
         reducedComplementCBAFile << " | ";
         reducedComplementCBAFile << numberToBinary(allOnes - reducedFeasibleCBAs[i]);
@@ -104,4 +107,5 @@ int main()
         reducedComplementCBAFile << numberToBinary(getReducedComplement(reducedFeasibleCBAs[i])) << std::endl;
     }
     reducedComplementCBAFile.close();
+    reducedComplementCBARawFile.close();
 }
