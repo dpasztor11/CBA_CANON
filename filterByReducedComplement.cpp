@@ -9,8 +9,11 @@
 
 using namespace ba_graph;
 
-const int len = 6;
-const long long allOnes = 2147483647; // 2^31-1
+const int len = 4;
+// works for len == 6, 5 or 4
+const int feasibleCBAsCount = len == 6 ? 70986 : (len == 5 ? 16 : 6);
+const int riaCount = colouring_bit_array_internal::Comparator(len).len; // relevant_indices_absolute
+const long long allOnes = (1 << riaCount) - 1;                          // 2^ria-1
 
 std::vector<long long> feasibleCBAs;
 std::vector<long long> reducedFeasibleCBAs;
@@ -20,7 +23,7 @@ std::string numberToBinary(long long num)
 {
     std::string sol = "";
     long long toCheck = num;
-    for (int j = 0; j < 31; j++)
+    for (int j = 0; j < riaCount; j++)
     {
         sol = (char)('0' + toCheck % 2) + sol;
         toCheck /= 2;
@@ -61,24 +64,25 @@ int main()
 {
     // getting feasibleCBAs from file
     std::ifstream feasibleCBAFile;
-    feasibleCBAFile.open("feasibleCBA.txt");
+    feasibleCBAFile.open("txt/feasibleCBA" + std::to_string(len) + ".txt");
     std::string temp;
     std::vector<long long> minimalFeasibleCBAs;
-    for (long long i = 0; i < 70986; i++)
+    for (long long i = 0; i < feasibleCBAsCount; i++)
     {
         feasibleCBAFile >> temp;
-        if (i != 0)
+        // no first line or zero vector
+        if (i >= 2)
         {
             feasibleCBAs.push_back(binaryToNumber(temp));
         }
     }
-    // removing zero vector
-    feasibleCBAs.erase(feasibleCBAs.begin());
+
+    feasibleCBAFile.close();
 
     // finding reducedFeasibleCBAs
     for (long long i = 0; i < feasibleCBAs.size(); i++)
     {
-        if (i % 1000 == 0)
+        if (i % 10000 == 0)
         {
             std::cout << i << std::endl;
         }
@@ -92,8 +96,8 @@ int main()
 
     std::ofstream reducedComplementCBAFile;
     std::ofstream reducedComplementCBARawFile;
-    reducedComplementCBAFile.open("reducedComplementCBA.txt");
-    reducedComplementCBARawFile.open("reducedComplementCBARaw.txt");
+    reducedComplementCBAFile.open("txt/reducedComplementCBA" + std::to_string(len) + ".txt");
+    reducedComplementCBARawFile.open("txt/reducedComplementCBARaw" + std::to_string(len) + ".txt");
     reducedComplementCBAFile << "ReducedComplementCBA:" << std::endl;
     reducedComplementCBAFile << "Count: " << reducedFeasibleCBAs.size() << std::endl;
     reducedComplementCBAFile << "feasibleCBA | complement | reduced complement" << std::endl;
