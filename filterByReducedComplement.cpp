@@ -6,10 +6,11 @@
 #include <execution>
 #include <fstream>
 #include <set>
+#include <map>
 
 using namespace ba_graph;
 
-const int len = 4;
+const int len = 6;
 // works for len == 6, 5 or 4
 const int feasibleCBAsCount = len == 6 ? 70986 : (len == 5 ? 16 : 6);
 const int riaCount = colouring_bit_array_internal::Comparator(len).len; // relevant_indices_absolute
@@ -79,6 +80,12 @@ int main()
 
     feasibleCBAFile.close();
 
+    // canons
+    std::ofstream canonsFile;
+    canonsFile.open("txt/canons" + std::to_string(len) + ".txt");
+
+    std::map<long long, long long> reducedComplementToIndex;
+
     // finding reducedFeasibleCBAs
     for (long long i = 0; i < feasibleCBAs.size(); i++)
     {
@@ -91,8 +98,12 @@ int main()
         {
             reducedFeasibleCBAs.push_back(feasibleCBAs[i]);
             reducedComplements.insert(reducedComplement);
+            reducedComplementToIndex[reducedComplement] = i;
         }
+        canonsFile << numberToBinary(feasibleCBAs[i]) << ", id:"
+                   << numberToBinary(feasibleCBAs[reducedComplementToIndex[reducedComplement]]) << std::endl;
     }
+    canonsFile.close();
 
     std::ofstream reducedComplementCBAFile;
     std::ofstream reducedComplementCBARawFile;
