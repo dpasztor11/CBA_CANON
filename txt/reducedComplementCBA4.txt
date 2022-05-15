@@ -1,4 +1,5 @@
 ReducedComplementCBA:
-Count: 1
+Count: 2
 feasibleCBA | complement | reduced complement
+0000 | 1111 | 1111
 0110 | 1001 | 0000

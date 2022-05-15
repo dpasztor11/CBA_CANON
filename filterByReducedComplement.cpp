@@ -68,14 +68,13 @@ int main()
     feasibleCBAFile.open("txt/feasibleCBA" + std::to_string(len) + ".txt");
     std::string temp;
     std::vector<long long> minimalFeasibleCBAs;
+
+    // no first line
+    feasibleCBAFile >> temp;
     for (long long i = 0; i < feasibleCBAsCount; i++)
     {
         feasibleCBAFile >> temp;
-        // no first line or zero vector
-        if (i >= 2)
-        {
-            feasibleCBAs.push_back(binaryToNumber(temp));
-        }
+        feasibleCBAs.push_back(binaryToNumber(temp));
     }
 
     feasibleCBAFile.close();

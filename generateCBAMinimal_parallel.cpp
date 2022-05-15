@@ -10,7 +10,7 @@ using namespace ba_graph;
 
 const int len = 6;
 // works for len == 6, 5 or 4
-const int feasibleCBAsCount = len == 6 ? 70986 : (len == 5 ? 16 : 6);
+const int feasibleCBAsCount = len == 6 ? 70985 : (len == 5 ? 16 : 6);
 const int riaCount = colouring_bit_array_internal::Comparator(len).len; // relevant_indices_absolute
 
 long long binaryToNumber(std::string binary)
@@ -31,14 +31,14 @@ int main()
     feasibleCBAFile.open("txt/feasibleCBA" + std::to_string(len) + ".txt");
     std::string temp;
     std::vector<long long> minimalFeasibleCBAs;
-    for (long long i = 0; i < feasibleCBAsCount; i++)
+
+    // no first line or zero vector
+    feasibleCBAFile >> temp;
+    feasibleCBAFile >> temp;
+    for (long long i = 0; i < feasibleCBAsCount - 1; i++)
     {
         feasibleCBAFile >> temp;
-        // no first line or zero vector
-        if (i >= 2)
-        {
-            feasibleCBAs.push_back(binaryToNumber(temp));
-        }
+        feasibleCBAs.push_back(binaryToNumber(temp));
     }
 
     feasibleCBAFile.close();
