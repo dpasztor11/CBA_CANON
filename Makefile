@@ -39,8 +39,8 @@ feasible_run_p:
 	./build/5polestest.out
 
 reducedComplement:
-	g++ -std=c++17 -g -O3 -pedantic -Wall -Wextra -fmax-errors=3 filterByReducedComplement.cpp -o build/filterByReducedComplement.out
-	./build/filterByReducedComplement.out
+	g++ -std=c++17 -g -O3 -pedantic -Wall -Wextra -fmax-errors=3 generateCSKEq.cpp -o build/generateCSKEq.out
+	./build/generateCSKEq.out
 
 generateMinimal:
 	g++ -std=c++17 -g -O3 -pedantic -Wall -Wextra -fmax-errors=3 generateCBAMinimal_parallel.cpp -o build/generateCBAMinimal_parallel.out -ltbb
@@ -50,8 +50,16 @@ generateFeasibleToFile:
 	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 generateCBAToFile_parallel.cpp -o build/generateCBAToFile_parallel.out -ltbb
 	./build/generateCBAToFile_parallel.out
 
+generateCEq:
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 generateCEq.cpp -o build/generateCEq.out -ltbb
+	./build/generateCEq.out
+
 generatePoset:
 	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 posetFeasibleCBA.cpp -o build/posetFeasibleCBA.out
 	./build/posetFeasibleCBA.out
+
+generateSolutions:
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  generateCSKSolutions.cpp -o build/run.out
+	./build/run.out
 
 .PHONY: test debug run feasible_debug feasible_run 5poles run2 debug2 feasible_run_p test_kempe
