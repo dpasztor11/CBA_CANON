@@ -55,8 +55,8 @@ generateCEq:
 	./build/generateCEq.out
 
 generatePoset:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 posetFeasibleCBA.cpp -o build/posetFeasibleCBA.out
-	./build/posetFeasibleCBA.out
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 posetCSKEq.cpp -o build/posetCSKEq.out
+	./build/posetCSKEq.out
 
 generateSolutions:
 	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  generateCSKSolutions.cpp -o build/run.out

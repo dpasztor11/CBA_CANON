@@ -9,9 +9,9 @@
 
 using namespace ba_graph;
 
-const int len = 4;
+const int len = 6;
 // works for len == 6, 5 or 4
-const long long reducedComplementCBACount = len == 6 ? 261 : (len == 5 ? 5 : 1);
+const long long reducedComplementCBACount = len == 6 ? 843 : (len == 5 ? 7 : 4);
 const int riaCount = colouring_bit_array_internal::Comparator(len).len; // relevant_indices_absolute
 
 std::string numberToBinary(long long num)
