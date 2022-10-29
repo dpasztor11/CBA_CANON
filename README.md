@@ -20,8 +20,9 @@ Cubic k-pole P is a graph that has k ordered vertices of degree one and remainin
 
 **C-ekvivalence** = swapping colours
 (so CBA1 is ekvivalent to CBA2 iff CBA1 = {a | a is created by swapping 2 colours of b AND b is 6-tuple from CBA2})
+
 **S-ekvivalence** = tuple permutation
 (so CBA1 is ekvivalent to CBA2 iff CBA1 = {a | a = phi(b) AND b is k-tuple from CBA2 AND phi is some permutation})
+
 **K-ekvivalence** = same Kempe closed components
 (so CBA1 is ekvivalent to CBA2 iff KempeClosedComponent(CBA1) = KempeClosedComponent(CBA2), where KempeClosedComponent(CBA) is maximal plausible CBA that is a subset of complement of CBA)
-
