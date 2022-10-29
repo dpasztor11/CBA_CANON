@@ -1,5 +1,6 @@
 #include "colouring_bit_array_canon.hpp"
 #include "kempe_closed.hpp"
+#include "helper.hpp"
 #include <iostream>
 #include <algorithm>
 #include <utility>
@@ -11,30 +12,8 @@ using namespace ba_graph;
 
 const int len = 6;
 // works for len == 6, 5 or 4
-const long long reducedComplementCBACount = len == 6 ? 843 : (len == 5 ? 7 : 4);
+const long long reducedComplementCBACount = getCskEqCount(len);
 const int riaCount = colouring_bit_array_internal::Comparator(len).len; // relevant_indices_absolute
-
-std::string numberToBinary(long long num)
-{
-    std::string sol = "";
-    long long toCheck = num;
-    for (int j = 0; j < riaCount; j++)
-    {
-        sol = (char)('0' + toCheck % 2) + sol;
-        toCheck /= 2;
-    }
-    return sol;
-}
-
-long long binaryToNumber(std::string binary)
-{
-    long long sol = 0;
-    for (int i = 0; i < binary.length(); i++)
-    {
-        sol = (sol << 1) + (binary[i] == '1');
-    }
-    return sol;
-}
 
 int main()
 {

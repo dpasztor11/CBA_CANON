@@ -8,7 +8,7 @@
 
 using namespace ba_graph;
 
-const int len = 4;
+const int len = 5;
 const int riaCount = colouring_bit_array_internal::Comparator(len).len; // relevant_indices_absolute
 
 int main()
