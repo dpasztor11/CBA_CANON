@@ -13,11 +13,11 @@ long long binaryToNumber(std::string binary)
     return sol;
 }
 
-std::string numberToBinary(long long num)
+std::string numberToBinary(long long num, int vectorSize)
 {
     std::string sol = "";
     long long toCheck = num;
-    for (int j = 0; j < riaCount; j++)
+    for (int j = 0; j < vectorSize; j++)
     {
         sol = (char)('0' + toCheck % 2) + sol;
         toCheck /= 2;
@@ -125,14 +125,7 @@ void storeCBAsToFile(std::string fileName, std::vector<long long> cbas, int vect
     file.open(fileName);
     for (int i = 0; i < cbas.size(); i++)
     {
-        std::string sol = "";
-        long long toCheck = cbas[i];
-        for (int j = 0; j < vectorSize; j++)
-        {
-            sol = (char)('0' + toCheck % 2) + sol;
-            toCheck /= 2;
-        }
-        file << sol << std::endl;
+        file << numberToBinary(cbas[i], vectorSize) << std::endl;
     }
     file.close();
 }

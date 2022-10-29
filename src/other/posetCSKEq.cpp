@@ -47,11 +47,11 @@ int main()
             {
                 if (first)
                 {
-                    posetFile << numberToBinary(reducedComplementCBAs[i]) << ":\n";
+                    posetFile << numberToBinary(reducedComplementCBAs[i], riaCount) << ":\n";
                     first = false;
                 }
                 posetCBAs[i].push_back(j);
-                posetFile << "  " << numberToBinary(reducedComplementCBAs[j]) << "\n";
+                posetFile << "  " << numberToBinary(reducedComplementCBAs[j], riaCount) << "\n";
             }
         }
     }
