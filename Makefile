@@ -39,7 +39,7 @@ feasible_run_p:
 	./build/5polestest.out
 
 reducedComplement:
-	g++ -std=c++17 -g -O3 -pedantic -Wall -Wextra -fmax-errors=3 generateCSKEq.cpp -o build/generateCSKEq.out
+	g++ -std=c++17 -g -O3 -pedantic -Wall -Wextra -fmax-errors=3 src/EquivalenceGeneration/generateCSKEq.cpp -o build/generateCSKEq.out
 	./build/generateCSKEq.out
 
 generateMinimal:
@@ -54,12 +54,33 @@ generateCEq:
 	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 generateCEq.cpp -o build/generateCEq.out -ltbb
 	./build/generateCEq.out
 
+generateCEqCSEq:
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 src/EquivalenceGeneration/generateCEqCSEq.cpp -o build/generateCEqCSEq.out -ltbb
+	./build/generateCEqCSEq.out
+
 generatePoset:
 	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 posetCSKEq.cpp -o build/posetCSKEq.out
 	./build/posetCSKEq.out
 
 generateSolutions:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  generateCSKSolutions.cpp -o build/run.out
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/generateCSKSolutions.cpp -o build/run.out
 	./build/run.out
+
+graphJoin6x6:
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/wip/graphJoin6x6.cpp -o build/run.out
+	./build/run.out
+
+graphJoin7:
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/wip/graphJoin7.cpp -o build/run.out
+	./build/run.out
+
+graphJoin7x5:
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/wip/graphJoin7x5.cpp -o build/run.out
+	./build/run.out
+
+graphJoin:
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/graphJoin.cpp -o build/run.out
+	./build/run.out
+
 
 .PHONY: test debug run feasible_debug feasible_run 5poles run2 debug2 feasible_run_p test_kempe

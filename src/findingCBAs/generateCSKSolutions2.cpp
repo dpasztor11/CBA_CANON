@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <iostream>
-#include "colouring_bit_array_canon.hpp"
+#include "./../CBA/colouring_bit_array_canon.hpp"
 #include <set>
 #include <queue>
 using namespace ba_graph;

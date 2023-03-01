@@ -1,19 +1,20 @@
 #include <assert.h>
 #include <iostream>
 #include <fstream>
-#include "colouring_bit_array_canon.hpp"
+#include "./../CBA/colouring_bit_array_canon.hpp"
 #include <map>
 #include <queue>
 #include <set>
+#include "./../helper.hpp"
 using namespace ba_graph;
 
 const int maxlen = 6;
-const int cskCount = maxlen == 6 ? 843 : (maxlen == 5 ? 7 : 4);
-const int canonCount = maxlen == 6 ? 70986 : (maxlen == 5 ? 16 : 6);
+const int cskCount = getCskEqCount(maxlen);
+const int canonCount = getCsEqCount(maxlen);
 
 std::map<std::string, std::string> canonsMap;
-std::vector<std::pair<std::string, bool>> foundCSK;
-std::set<std::string> foundCSKSet;
+std::vector<std::pair<std::string, bool>> foundCsk;
+std::set<std::string> foundCskSet;
 
 std::map<const std::vector<uint_fast8_t>, ColouringBitArray> map[maxlen + 1];
 std::queue<std::vector<uint_fast8_t>> queue[maxlen + 1];
@@ -21,40 +22,10 @@ std::queue<std::vector<uint_fast8_t>> queue[maxlen + 1];
 std::map<const std::vector<uint_fast8_t>, std::vector<uint_fast8_t>> previous[maxlen + 1];
 std::map<const std::vector<uint_fast8_t>, std::vector<uint_fast8_t>> edge[maxlen + 1];
 
-std::string cbaToString(std::vector<uint_fast8_t> &cba)
-{
-    std::string s = "";
-    for (unsigned int k = 0; k < cba.size(); k++)
-        s += (int)cba[k] + '0';
-    return s;
-}
-
 int main()
 {
-    // getting canons from file
-    std::ifstream canonFile;
-    canonFile.open("txt/canons" + std::to_string(maxlen) + ".txt");
-    std::string temp1, temp2;
-    for (long long i = 0; i < canonCount; i++)
-    {
-        canonFile >> temp1 >> temp2;
-        temp1 = temp1.substr(0, temp1.length() - 1);
-        temp2 = temp2.substr(3, temp2.length() - 3);
-        canonsMap[temp1] = temp2;
-    }
-
-    canonFile.close();
-
-    // read foundCSK
-    std::ifstream foundCSKFile;
-    foundCSKFile.open("txt/foundCSK" + std::to_string(maxlen) + ".txt");
-    for (long long i = 0; i < cskCount; i++)
-    {
-        foundCSKFile >> temp1 >> temp2;
-        foundCSK.push_back({temp1, temp2 == "1"});
-    }
-
-    foundCSKFile.close();
+    getCanonsFromFile(maxlen, canonsMap);
+    getFoundCskVectorFromFile(maxlen, foundCsk);
 
     // add empty colourable graph
     {
@@ -118,7 +89,7 @@ int main()
                 std::cout << "  Operation 0,0 \n";
                 std::string s = cbaToString(expnew);
                 std::string sCanon = canonsMap[s];
-                foundCSKSet.insert(sCanon);
+                foundCskSet.insert(sCanon);
             }
         }
 
@@ -160,7 +131,7 @@ int main()
                         std::string s = cbaToString(expnew);
                         std::string sCanon = canonsMap[s];
                         std::cout << "found: " << s << " with canon " << sCanon << "\n";
-                        foundCSKSet.insert(sCanon);
+                        foundCskSet.insert(sCanon);
                     }
                 }
 
@@ -199,7 +170,7 @@ int main()
                                     std::string s = cbaToString(expnew);
                                     std::string sCanon = canonsMap[s];
                                     std::cout << "found: " << s << " with canon " << sCanon << "\n";
-                                    foundCSKSet.insert(sCanon);
+                                    foundCskSet.insert(sCanon);
                                 }
                             }
 
@@ -227,7 +198,7 @@ int main()
                                         std::string s = cbaToString(expnew);
                                         std::string sCanon = canonsMap[s];
                                         std::cout << "found: " << s << " with canon " << sCanon << "\n";
-                                        foundCSKSet.insert(sCanon);
+                                        foundCskSet.insert(sCanon);
                                     }
                                 }
                                 {
@@ -262,7 +233,7 @@ int main()
                                         std::string s = cbaToString(expnew);
                                         std::string sCanon = canonsMap[s];
                                         std::cout << "found: " << s << " with canon " << sCanon << "\n";
-                                        foundCSKSet.insert(sCanon);
+                                        foundCskSet.insert(sCanon);
                                     }
                                 }
                             }
@@ -283,25 +254,10 @@ int main()
     long totalFound = 0;
     for (long long i = 0; i < cskCount; i++)
     {
-        bool found = foundCSK[i].second || foundCSKSet.count(foundCSK[i].first);
-        foundCSKFileOutput << foundCSK[i].first << " " << found << "\n";
+        bool found = foundCsk[i].second || foundCskSet.count(foundCsk[i].first);
+        foundCSKFileOutput << foundCsk[i].first << " " << found << "\n";
         totalFound += found;
     }
     foundCSKFileOutput << "found " << totalFound << " / " << cskCount << "\n";
     foundCSKFileOutput.close();
-
-    /*
-    for (int i = 0; i < maxlen; i++)
-        std::cout << map[i].size() << ",";
-    std::cout << map[maxlen].size() << "\n";
-
-    for (auto const &el : map[5])
-    {
-        auto canon = el.first;
-        auto cba = el.second;
-        for (unsigned int i = 0; i < canon.size() - 1; i++)
-            std::cout << (int)canon[i] << ",";
-        std::cout << (int)canon[canon.size() - 1] << "\n";
-    }
-    */
 }
