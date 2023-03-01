@@ -1,4 +1,4 @@
-FeasibleCBA:
+CS-equivalence:
 0000000000
 1110000000
 1100110000

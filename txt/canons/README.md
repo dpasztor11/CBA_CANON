@@ -1,1 +1,1 @@
-Canon CBA for every CBA in respect to cs-equivalence.
+For every CBA from cs-equivalence map to canonical CBA from csk-equivalence.

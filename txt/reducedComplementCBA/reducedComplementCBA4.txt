@@ -1,6 +1,6 @@
 ReducedComplementCBA:
 Count: 4
-feasibleCBA | complement | reduced complement
+csEqCBA | complement | reduced complement
 0000 | 1111 | 1111
 0110 | 1001 | 1001
 1110 | 0001 | 0000
