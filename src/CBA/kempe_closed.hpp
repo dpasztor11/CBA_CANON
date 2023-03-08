@@ -1,3 +1,6 @@
+#ifndef KEMPE_CLOSED_H
+#define KEMPE_CLOSED_H
+
 #include <vector>
 #include <utility>
 #include "colouring_bit_array.hpp"
@@ -135,3 +138,5 @@ namespace ba_graph
     }
 
 } // end namespace ba_graph
+
+#endif

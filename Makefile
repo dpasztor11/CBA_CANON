@@ -58,6 +58,10 @@ generateCEqCSEq:
 	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 src/EquivalenceGeneration/generateCEqCSEq.cpp -o build/generateCEqCSEq.out -ltbb
 	./build/generateCEqCSEq.out
 
+generateCSKEq:
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 src/EquivalenceGeneration/generateCSKEq.cpp -o build/generateCSKEq.out -ltbb
+	./build/generateCSKEq.out
+
 generatePoset:
 	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 posetCSKEq.cpp -o build/posetCSKEq.out
 	./build/posetCSKEq.out
@@ -72,6 +76,10 @@ graphJoin6x6:
 
 graphJoin7:
 	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/wip/graphJoin7.cpp -o build/run.out
+	./build/run.out
+
+experiment1:
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/experiment1.cpp -o build/run.out
 	./build/run.out
 
 graphJoin7x5:

@@ -1,3 +1,6 @@
+#ifndef HELPER_H
+#define HELPER_H
+
 #include "./CBA/colouring_bit_array_canon.hpp"
 #include "./CBA/kempe_closed.hpp"
 #include <string>
@@ -41,7 +44,7 @@ long getCskEqCount(int len)
     switch (len)
     {
     case 6:
-        return 419;
+        return 170;
     case 5:
         return 7;
     case 4:
@@ -189,6 +192,45 @@ void calculateToRia(std::map<std::vector<uint8_t>, int> &mapToFill, int len = 6)
     return;
 }
 
+void printVec(const std::vector<uint8_t> &vec)
+{
+    std::cout << "[";
+    for (const auto &value : vec)
+    {
+        std::cout << static_cast<int>(value) << ",";
+    }
+    std::cout << "]" << std::endl;
+}
+
+void addConnectWaysToMap(std::map<std::tuple<int, int, int>, std::vector<std::vector<uint8_t>>> &map, int i, int j, int k, std::vector<uint8_t> vec)
+{
+    if (vec.size() == j)
+    {
+        int danglingEdges = i - j;
+        int danglingMap[3] = {2, 0, 1};
+        for (int i = 0; i < vec.size(); i++)
+        {
+            danglingEdges += danglingMap[vec[i]];
+        }
+        if (danglingEdges == k)
+        {
+            map[std::make_tuple(i, j, k)].push_back(vec);
+            if (i != j)
+                map[std::make_tuple(j, i, k)].push_back(vec);
+        }
+    }
+    else
+    {
+        vec.push_back(0);
+        addConnectWaysToMap(map, i, j, k, vec);
+        vec[vec.size() - 1] = 1;
+        addConnectWaysToMap(map, i, j, k, vec);
+        vec[vec.size() - 1] = 2;
+        addConnectWaysToMap(map, i, j, k, vec);
+        vec.pop_back();
+    }
+}
+
 // creates a map such that:
 // key: (a, b, c)
 // value: vector of vectors that decribe ways to connect a-pole and b-pole to get c-pole
@@ -199,7 +241,6 @@ void calculateToRia(std::map<std::vector<uint8_t>, int> &mapToFill, int len = 6)
 std::map<std::tuple<int, int, int>, std::vector<std::vector<uint8_t>>> initConnectWaysMap()
 {
     std::map<std::tuple<int, int, int>, std::vector<std::vector<uint8_t>>> map;
-    std::vector<uint8_t> vecToPush;
     for (int i = 4; i <= 7; i++)
     {
         for (int j = 4; j <= i; j++)
@@ -207,30 +248,7 @@ std::map<std::tuple<int, int, int>, std::vector<std::vector<uint8_t>>> initConne
             for (int k = 6; k <= 7; k++)
             {
                 map[std::make_tuple(i, j, k)] = map[std::make_tuple(j, i, k)] = {};
-                int threes = i - j;
-                for (int zeroes = 0; zeroes * 2 + threes <= k; zeroes++)
-                {
-                    int twos = k - zeroes * 2 - threes;
-                    int ones = i - zeroes - twos - threes;
-                    if (ones < 0 || twos < 0)
-                        continue;
-                    vecToPush = {};
-                    for (int twos2 = 0; twos2 < twos; twos2++)
-                        vecToPush.push_back(2);
-
-                    for (int ones2 = 0; ones2 < ones; ones2++)
-                        vecToPush.push_back(1);
-
-                    for (int zeroes2 = 0; zeroes2 < zeroes; zeroes2++)
-                        vecToPush.push_back(0);
-
-                    for (int threes2 = 0; threes2 < threes; threes2++)
-                        vecToPush.push_back(3);
-
-                    map[std::make_tuple(i, j, k)].push_back(vecToPush);
-                    if (i != j)
-                        map[std::make_tuple(j, i, k)].push_back(vecToPush);
-                }
+                addConnectWaysToMap(map, i, j, k, {});
             }
         }
     }
@@ -254,3 +272,5 @@ ColouringBitArray getCBA7ReducedComplement(ColouringBitArray cba)
     }
     return cba;
 }
+
+#endif

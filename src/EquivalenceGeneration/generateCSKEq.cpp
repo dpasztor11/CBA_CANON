@@ -34,7 +34,19 @@ long long getReducedComplement(long long num)
             best = cEq[i];
         }
     }
-    return best;
+
+    std::string bestStr = numberToBinary(best, riaCount);
+    // c -> cs
+    std::vector<uint_fast8_t> temp;
+    for (int i = 0; i < riaCount; i++)
+        temp.push_back(bestStr[i] - '0');
+    temp = canonize(from_canon(temp, len), len);
+
+    std::string cs = "";
+    for (int i = 0; i < riaCount; i++)
+        cs += temp[i] + '0';
+
+    return binaryToNumber(cs);
 }
 
 bool compareByReducedComplement(long long a, long long b)
@@ -76,9 +88,9 @@ int main()
     std::ofstream reducedComplementCBAFile;
     std::ofstream reducedComplementCBARawFile;
     std::ofstream foundCSKFile;
-    reducedComplementCBAFile.open("txt/reducedComplementCBA" + std::to_string(len) + ".txt");
-    reducedComplementCBARawFile.open("txt/reducedComplementCBARaw" + std::to_string(len) + ".txt");
-    foundCSKFile.open("txt/foundCSK" + std::to_string(len) + ".txt");
+    reducedComplementCBAFile.open("txt/reducedComplementCBA/reducedComplementCBA" + std::to_string(len) + ".txt");
+    reducedComplementCBARawFile.open("txt/reducedComplementCBA/reducedComplementCBARaw" + std::to_string(len) + ".txt");
+    foundCSKFile.open("txt/foundCSK/foundCSK" + std::to_string(len) + ".txt");
     reducedComplementCBAFile << "ReducedComplementCBA:" << std::endl;
     reducedComplementCBAFile << "Count: " << reducedCsEq.size() << std::endl;
     reducedComplementCBAFile << "csEqCBA | complement | reduced complement" << std::endl;
