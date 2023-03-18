@@ -49,11 +49,6 @@ long long getReducedComplement(long long num)
     return binaryToNumber(cs);
 }
 
-bool compareByReducedComplement(long long a, long long b)
-{
-    return getReducedComplement(a) == getReducedComplement(b);
-}
-
 int main()
 {
     csEq = getCsEq(len, true);

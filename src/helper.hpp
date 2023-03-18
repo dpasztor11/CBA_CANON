@@ -10,16 +10,19 @@
 #include <map>
 
 using namespace ba_graph;
+using namespace std;
 
-std::string cbaToString(std::vector<uint_fast8_t> &cba)
+vector<vector<uint_fast8_t>> perms = {{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}};
+
+string cbaToString(vector<uint_fast8_t> &cba)
 {
-    std::string s = "";
+    string s = "";
     for (unsigned int k = 0; k < cba.size(); k++)
         s += (int)cba[k] + '0';
     return s;
 }
 
-long long binaryToNumber(std::string binary)
+long long binaryToNumber(string binary)
 {
     long long sol = 0;
     for (int i = 0; i < (int)binary.length(); i++)
@@ -27,9 +30,9 @@ long long binaryToNumber(std::string binary)
     return sol;
 }
 
-std::string numberToBinary(long long num, int vectorSize)
+string numberToBinary(long long num, int vectorSize)
 {
-    std::string sol = "";
+    string sol = "";
     long long toCheck = num;
     for (int j = 0; j < vectorSize; j++)
     {
@@ -84,13 +87,13 @@ long getCEqCount(int len)
     }
 }
 
-std::vector<long long> getFromFile(int len, int count, int linesToSkip, std::string filePath)
+vector<long long> getFromFile(int len, int count, int linesToSkip, string filePath)
 {
-    std::ifstream file;
+    ifstream file;
     file.open(filePath);
 
-    std::vector<long long> vectorReadFromFile;
-    std::string temp;
+    vector<long long> vectorReadFromFile;
+    string temp;
 
     for (int i = 0; i < linesToSkip; i++)
         file >> temp;
@@ -104,27 +107,27 @@ std::vector<long long> getFromFile(int len, int count, int linesToSkip, std::str
     return vectorReadFromFile;
 }
 
-std::vector<long long> getCEq(int len, bool withZeroVector)
+vector<long long> getCEq(int len, bool withZeroVector)
 {
-    return getFromFile(len, getCEqCount(len) - !withZeroVector, !withZeroVector + 1, "txt/cEquivalence/cEq" + std::to_string(len) + ".txt");
+    return getFromFile(len, getCEqCount(len) - !withZeroVector, !withZeroVector + 1, "txt/cEquivalence/cEq" + to_string(len) + ".txt");
 }
 
-std::vector<long long> getCsEq(int len, bool withZeroVector)
+vector<long long> getCsEq(int len, bool withZeroVector)
 {
-    return getFromFile(len, getCsEqCount(len) - !withZeroVector, !withZeroVector + 1, "txt/csEquivalence/csEq" + std::to_string(len) + ".txt");
+    return getFromFile(len, getCsEqCount(len) - !withZeroVector, !withZeroVector + 1, "txt/csEquivalence/csEq" + to_string(len) + ".txt");
 }
 
-std::vector<long long> getCskEq(int len, bool withZeroVector)
+vector<long long> getCskEq(int len, bool withZeroVector)
 {
-    return getFromFile(len, getCskEqCount(len) - !withZeroVector, !withZeroVector, "txt/reducedComplementCBA/reducedComplementCBARaw" + std::to_string(len) + ".txt");
+    return getFromFile(len, getCskEqCount(len) - !withZeroVector, !withZeroVector, "txt/reducedComplementCBA/reducedComplementCBARaw" + to_string(len) + ".txt");
 }
 
 // maps cs-equivalent CBA to its canonical csk-equivalent CBA
-void getCanonsFromFile(int len, std::map<std::string, std::string> &canonsMap)
+void getCanonsFromFile(int len, map<string, string> &canonsMap)
 {
-    std::ifstream canonFile;
-    canonFile.open("txt/canons/canons" + std::to_string(len) + ".txt");
-    std::string temp1, temp2;
+    ifstream canonFile;
+    canonFile.open("txt/canons/canons" + to_string(len) + ".txt");
+    string temp1, temp2;
     for (long long i = 0; i < getCsEqCount(len); i++)
     {
         canonFile >> temp1 >> temp2;
@@ -136,11 +139,11 @@ void getCanonsFromFile(int len, std::map<std::string, std::string> &canonsMap)
     canonFile.close();
 }
 
-void getFoundCskVectorFromFile(int len, std::vector<std::pair<std::string, bool>> &foundCsk)
+void getFoundCskVectorFromFile(int len, vector<pair<string, bool>> &foundCsk)
 {
-    std::ifstream foundCskFile;
-    foundCskFile.open("txt/foundCSK/foundCSK" + std::to_string(len) + ".txt");
-    std::string temp1, temp2;
+    ifstream foundCskFile;
+    foundCskFile.open("txt/foundCSK/foundCSK" + to_string(len) + ".txt");
+    string temp1, temp2;
     for (long long i = 0; i < getCskEqCount(len); i++)
     {
         foundCskFile >> temp1 >> temp2;
@@ -150,11 +153,11 @@ void getFoundCskVectorFromFile(int len, std::vector<std::pair<std::string, bool>
     foundCskFile.close();
 }
 
-void getFoundCskMapFromFile(int len, std::map<std::string, bool> &foundCskMap)
+void getFoundCskMapFromFile(int len, map<string, bool> &foundCskMap)
 {
-    std::ifstream foundCskFile;
-    foundCskFile.open("txt/foundCSK/foundCSK" + std::to_string(len) + ".txt");
-    std::string temp1, temp2;
+    ifstream foundCskFile;
+    foundCskFile.open("txt/foundCSK/foundCSK" + to_string(len) + ".txt");
+    string temp1, temp2;
     for (long long i = 0; i < getCskEqCount(len); i++)
     {
         foundCskFile >> temp1 >> temp2;
@@ -164,24 +167,23 @@ void getFoundCskMapFromFile(int len, std::map<std::string, bool> &foundCskMap)
     foundCskFile.close();
 }
 
-void storeCBAsToFile(std::string fileName, std::vector<long long> cbas, int vectorSize)
+void storeCBAsToFile(string fileName, vector<long long> cbas, int vectorSize)
 {
-    std::ofstream file;
+    ofstream file;
     file.open(fileName);
     for (int i = 0; i < (int)cbas.size(); i++)
-        file << numberToBinary(cbas[i], vectorSize) << std::endl;
+        file << numberToBinary(cbas[i], vectorSize) << endl;
     file.close();
 }
 
-void calculateToRia(std::map<std::vector<uint8_t>, int> &mapToFill, int len = 6)
+void calculateToRia(map<vector<uint8_t>, int> &mapToFill, int len = 6)
 {
-    std::vector<std::vector<uint_fast8_t>> ria = colouring_bit_array_internal::Comparator(len).relevant_indices_absolute;
-    std::vector<std::vector<uint_fast8_t>> perms = {{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}};
+    vector<vector<uint_fast8_t>> ria = colouring_bit_array_internal::Comparator(len).relevant_indices_absolute;
     for (int i = 0; i < ria.size(); i++)
     {
         for (int j = 0; j < 6; j++)
         {
-            std::vector<uint_fast8_t> newBoundaryColoring = ria.at(i);
+            vector<uint_fast8_t> newBoundaryColoring = ria.at(i);
             for (int k = 0; k < len; k++)
             {
                 newBoundaryColoring[k] = perms[j][newBoundaryColoring[k]];
@@ -192,17 +194,17 @@ void calculateToRia(std::map<std::vector<uint8_t>, int> &mapToFill, int len = 6)
     return;
 }
 
-void printVec(const std::vector<uint8_t> &vec)
+void printVec(const vector<uint8_t> &vec)
 {
-    std::cout << "[";
+    cout << "[";
     for (const auto &value : vec)
     {
-        std::cout << static_cast<int>(value) << ",";
+        cout << static_cast<int>(value) << ",";
     }
-    std::cout << "]" << std::endl;
+    cout << "]" << endl;
 }
 
-void addConnectWaysToMap(std::map<std::tuple<int, int, int>, std::vector<std::vector<uint8_t>>> &map, int i, int j, int k, std::vector<uint8_t> vec)
+void addConnectWaysToMap(map<tuple<int, int, int>, vector<vector<uint8_t>>> &map, int i, int j, int k, vector<uint8_t> vec)
 {
     if (vec.size() == j)
     {
@@ -214,9 +216,9 @@ void addConnectWaysToMap(std::map<std::tuple<int, int, int>, std::vector<std::ve
         }
         if (danglingEdges == k)
         {
-            map[std::make_tuple(i, j, k)].push_back(vec);
+            map[make_tuple(i, j, k)].push_back(vec);
             if (i != j)
-                map[std::make_tuple(j, i, k)].push_back(vec);
+                map[make_tuple(j, i, k)].push_back(vec);
         }
     }
     else
@@ -238,16 +240,16 @@ void addConnectWaysToMap(std::map<std::tuple<int, int, int>, std::vector<std::ve
 // 1 -> connect 2 dangling edges
 // 0 -> don't connect 2 dangling edges
 // 3 -> one dangling edge (because one side has more dangling edges)
-std::map<std::tuple<int, int, int>, std::vector<std::vector<uint8_t>>> initConnectWaysMap()
+map<tuple<int, int, int>, vector<vector<uint8_t>>> initConnectWaysMap()
 {
-    std::map<std::tuple<int, int, int>, std::vector<std::vector<uint8_t>>> map;
+    map<tuple<int, int, int>, vector<vector<uint8_t>>> map;
     for (int i = 4; i <= 7; i++)
     {
         for (int j = 4; j <= i; j++)
         {
             for (int k = 6; k <= 7; k++)
             {
-                map[std::make_tuple(i, j, k)] = map[std::make_tuple(j, i, k)] = {};
+                map[make_tuple(i, j, k)] = map[make_tuple(j, i, k)] = {};
                 addConnectWaysToMap(map, i, j, k, {});
             }
         }
