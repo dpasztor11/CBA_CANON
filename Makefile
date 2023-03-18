@@ -90,5 +90,9 @@ graphJoin:
 	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/graphJoin.cpp -o build/run.out
 	./build/run.out
 
+cycle:
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/cycle.cpp -o build/run.out
+	./build/run.out
+
 
 .PHONY: test debug run feasible_debug feasible_run 5poles run2 debug2 feasible_run_p test_kempe
