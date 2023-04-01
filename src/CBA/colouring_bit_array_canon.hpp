@@ -7,6 +7,8 @@
 
 #include "colouring_bit_array.hpp"
 #include <algorithm>
+#include <cstdint>
+
 namespace ba_graph {
 namespace colouring_bit_array_internal {
 

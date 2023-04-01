@@ -12,7 +12,9 @@
 using namespace ba_graph;
 using namespace std;
 
-vector<vector<uint_fast8_t>> perms = {{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}};
+vector<vector<uint_fast8_t>> perms3 = {{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}};
+
+const std::string EMPTY_CBA_6 = "0000000000000000000000000000000";
 
 string cbaToString(vector<uint_fast8_t> &cba)
 {
@@ -186,7 +188,7 @@ void calculateToRia(map<vector<uint8_t>, int> &mapToFill, int len = 6)
             vector<uint_fast8_t> newBoundaryColoring = ria.at(i);
             for (int k = 0; k < len; k++)
             {
-                newBoundaryColoring[k] = perms[j][newBoundaryColoring[k]];
+                newBoundaryColoring[k] = perms3[j][newBoundaryColoring[k]];
             }
             mapToFill[newBoundaryColoring] = i;
         }
@@ -194,14 +196,14 @@ void calculateToRia(map<vector<uint8_t>, int> &mapToFill, int len = 6)
     return;
 }
 
-void printVec(const vector<uint8_t> &vec)
+void printVec(const vector<uint8_t> &vec, ostream &file)
 {
-    cout << "[";
+    file << "[";
     for (const auto &value : vec)
     {
-        cout << static_cast<int>(value) << ",";
+        file << static_cast<int>(value) << ",";
     }
-    cout << "]" << endl;
+    file << "]" << endl;
 }
 
 void addConnectWaysToMap(map<tuple<int, int, int>, vector<vector<uint8_t>>> &map, int i, int j, int k, vector<uint8_t> vec)
@@ -273,6 +275,21 @@ ColouringBitArray getCBA7ReducedComplement(ColouringBitArray cba)
         }
     }
     return cba;
+}
+
+void updateFoundCsk(const std::map<std::string, bool> &foundCsk6Map, const std::vector<std::string> &allCsk6AsStrings)
+{
+    std::ofstream foundCSKFileOutput;
+    int foundCount = 0;
+    foundCSKFileOutput.open("txt/foundCSK" + std::to_string(6) + ".txt");
+    for (long long i = 0; i < allCsk6AsStrings.size(); i++)
+    {
+        auto found = foundCsk6Map.at(allCsk6AsStrings[i]);
+        foundCSKFileOutput << allCsk6AsStrings[i] << " " << found << "\n";
+        foundCount += found;
+    }
+    foundCSKFileOutput << "found " << foundCount << " / " << allCsk6AsStrings.size() << "\n";
+    foundCSKFileOutput.close();
 }
 
 #endif
