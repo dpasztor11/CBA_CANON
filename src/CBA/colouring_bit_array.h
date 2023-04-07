@@ -3,6 +3,7 @@
 
 #include<vector>
 #include<tuple>
+#include <stdint.h>
 
 namespace ba_graph {
 
