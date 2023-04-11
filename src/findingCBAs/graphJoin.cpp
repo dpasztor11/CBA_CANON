@@ -15,7 +15,7 @@
 
 using namespace ba_graph;
 
-const int maxOnesIn7Pole = 14;
+const int maxOnesIn7Pole = 20;
 
 const std::vector<std::vector<uint8_t>> riaArr7 = colouring_bit_array_internal::Comparator(7).relevant_indices_absolute;
 const std::vector<std::vector<uint8_t>> riaArr6 = colouring_bit_array_internal::Comparator(6).relevant_indices_absolute;
@@ -47,6 +47,8 @@ std::vector<std::string> foundCsk4AsStrings;
 
 int count6 = 0;
 int count7 = 0;
+
+int cskCount = 115;
 
 // assumes cba is in c-equivalence
 std::string cToCskEq6(std::string c)
@@ -95,6 +97,20 @@ std::vector<uint8_t> recolour(std::vector<uint8_t> tuple, int permIndex)
     for (int i = 0; i < tuple.size(); i++)
         newTuple.push_back(perm[permIndex][tuple[i]]);
     return newTuple;
+}
+
+void log(std::string csk, std::string c, std::string cba1, std::string cba2,
+         std::vector<uint_fast8_t> connectWay, std::vector<uint_fast8_t> connectOrder)
+{
+    ofstream file;
+    file.open("txt/foundCSK/CSK6FindingsLogger.txt", std::ios_base::app);
+    file << cskCount << ". " << csk << std::endl;
+    file << cskCount << " c: " << c << std::endl;
+    file << " from: " << cba1 << " and " << cba2 << std::endl;
+    file << " connectWay: ";
+    printVec(connectWay, file);
+    file << " connectOrder: ";
+    printVec(connectOrder, file);
 }
 
 // CBA1 is a (len1)-pole, CBA2 is a (len2)-pole
@@ -193,6 +209,7 @@ void connectCBAs(std::string cba1, int len1, std::string cba2, int len2, int len
                         std::cout << count6 << ". 6 sol found!!! " << csk << std::endl;
                         std::cout << "from " << sol << std::endl;
                         foundCsk6AsStrings.push_back(csk);
+                        log(csk, sol, cba1, cba2, connectWay, connectOrder);
                     }
                 }
             }
@@ -224,12 +241,12 @@ void connectWithAll4And5Poles(std::string cba, int len)
     for (int i = 0; i < foundCsk4AsStrings.size(); i++)
     {
         connectCBAs(cba, len, foundCsk4AsStrings[i], 4, 6);
-        // connectCBAs(cba, len, foundCsk4AsStrings[i], 4, 7);
+        connectCBAs(cba, len, foundCsk4AsStrings[i], 4, 7);
     }
     for (int i = 0; i < foundCsk5AsStrings.size(); i++)
     {
         connectCBAs(cba, len, foundCsk5AsStrings[i], 5, 6);
-        // connectCBAs(cba, len, foundCsk5AsStrings[i], 5, 7);
+        connectCBAs(cba, len, foundCsk5AsStrings[i], 5, 7);
     }
 }
 
@@ -240,12 +257,13 @@ void connectWithPrevious6And7Poles(std::string cba, int len, int i, int j)
     for (int k = 0; k <= i; k++)
     {
         connectCBAs(cba, len, foundCsk6AsStrings[k], 6, 6);
-        // connectCBAs(cba, len, foundCsk6AsStrings[k], 6, 7);
+        connectCBAs(cba, len, foundCsk6AsStrings[k], 6, 7);
     }
     for (int k = 0; k <= j; k++)
     {
         connectCBAs(foundCsk7AsStrings[k], 7, cba, len, 6);
-        // connectCBAs(foundCsk7AsStrings[k], 7, cba, len, 7);
+        if (len != 7)
+            connectCBAs(foundCsk7AsStrings[k], 7, cba, len, 7);
     }
 }
 
@@ -310,13 +328,7 @@ int main()
         }
     }
 
-    // write foundCSK
-    std::ofstream foundCSKFileOutput;
-    foundCSKFileOutput.open("txt/foundCSK" + std::to_string(6) + ".txt");
-    for (long long i = 0; i < allCsk6AsStrings.size(); i++)
-    {
-        foundCSKFileOutput << allCsk6AsStrings[i] << " " << foundCsk6Map[allCsk6AsStrings[i]] << "\n";
-    }
-    foundCSKFileOutput << "found " << foundCsk6AsStrings.size() << " / " << allCsk6AsStrings.size() << "\n";
-    foundCSKFileOutput.close();
+    updateFoundCsk(foundCsk6Map, allCsk6AsStrings);
+
+    return 0;
 }

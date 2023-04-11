@@ -16,8 +16,8 @@ std::map<std::string, std::string> canonsMap;
 std::vector<std::pair<std::string, bool>> foundCsk;
 std::set<std::string> foundCskSet;
 
-std::map<const std::vector<uint_fast8_t>, ColouringBitArray> map[maxlen + 1];
-std::queue<std::vector<uint_fast8_t>> queue[maxlen + 1];
+std::map<const std::vector<uint_fast8_t>, ColouringBitArray> mapp[maxlen + 1];
+std::queue<std::vector<uint_fast8_t>> queuee[maxlen + 1];
 
 std::map<const std::vector<uint_fast8_t>, std::vector<uint_fast8_t>> previous[maxlen + 1];
 std::map<const std::vector<uint_fast8_t>, std::vector<uint_fast8_t>> edge[maxlen + 1];
@@ -31,8 +31,8 @@ int main()
     {
         ColouringBitArray emptyCBA(1, true);
         auto emptycanon = compress_canon(canonize(emptyCBA, 0));
-        queue[0].push(emptycanon);
-        map[0][emptycanon] = emptyCBA;
+        queuee[0].push(emptycanon);
+        mapp[0][emptycanon] = emptyCBA;
 
         previous[0][emptycanon] = {};
         edge[0][emptycanon] = {};
@@ -44,10 +44,10 @@ int main()
         ColouringBitArray cba;
         int len = 0;
         for (; len <= maxlen; len++)
-            if (!queue[len].empty())
+            if (!queuee[len].empty())
             {
-                cba = std::move(map[len][queue[len].front()]);
-                queue[len].pop();
+                cba = std::move(mapp[len][queuee[len].front()]);
+                queuee[len].pop();
                 break;
             }
         if (len == maxlen + 1)
@@ -75,9 +75,9 @@ int main()
             res.concatenate_to_special(cba);
 
             auto canon = compress_canon(canonize(res, len + 2));
-            if (map[len + 2].try_emplace(canon, std::move(res)).second)
+            if (mapp[len + 2].try_emplace(canon, std::move(res)).second)
             {
-                queue[len + 2].push(canon);
+                queuee[len + 2].push(canon);
 
                 auto expold = canonize(cba, len);
                 auto expnew = expand_canon(canon);
@@ -116,9 +116,9 @@ int main()
                     res.concatenate_to_special(ColouringBitArray(part0.size(), false));
 
                     auto canon = compress_canon(canonize(res, len + 1));
-                    if (map[len + 1].try_emplace(canon, std::move(res)).second)
+                    if (mapp[len + 1].try_emplace(canon, std::move(res)).second)
                     {
-                        queue[len + 1].push(canon);
+                        queuee[len + 1].push(canon);
 
                         auto expold = canonize(cba, len);
                         auto expnew = expand_canon(canon);
@@ -155,9 +155,9 @@ int main()
                                 res.concatenate_to_special(partx);
 
                                 auto canon = compress_canon(canonize(res, len - 1));
-                                if (map[len - 1].try_emplace(canon, std::move(res)).second)
+                                if (mapp[len - 1].try_emplace(canon, std::move(res)).second)
                                 {
-                                    queue[len - 1].push(canon);
+                                    queuee[len - 1].push(canon);
 
                                     auto expold = canonize(cba, len);
                                     auto expnew = expand_canon(canon);
@@ -183,9 +183,9 @@ int main()
                                     res |= part22;
 
                                     auto canon = compress_canon(canonize(res, len - 2));
-                                    if (map[len - 2].try_emplace(canon, std::move(res)).second)
+                                    if (mapp[len - 2].try_emplace(canon, std::move(res)).second)
                                     {
-                                        queue[len - 2].push(canon);
+                                        queuee[len - 2].push(canon);
 
                                         auto expold = canonize(cba, len);
                                         auto expnew = expand_canon(canon);
@@ -218,9 +218,9 @@ int main()
                                     res.concatenate_to_special(part11);
 
                                     auto canon = compress_canon(canonize(res, len));
-                                    if (map[len].try_emplace(canon, std::move(res)).second)
+                                    if (mapp[len].try_emplace(canon, std::move(res)).second)
                                     {
-                                        queue[len].push(canon);
+                                        queuee[len].push(canon);
 
                                         auto expold = canonize(cba, len);
                                         auto expnew = expand_canon(canon);
@@ -243,8 +243,8 @@ int main()
         if (++counter % 1000 == 0)
         {
             for (int i = 0; i < maxlen; i++)
-                std::cout << map[i].size() << ",";
-            std::cout << map[maxlen].size() << "\n";
+                std::cout << mapp[i].size() << ",";
+            std::cout << mapp[maxlen].size() << "\n";
         }
     }
 
