@@ -12,9 +12,10 @@
 using namespace ba_graph;
 using namespace std;
 
-vector<vector<uint_fast8_t>> perms3 = {{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}};
+vector<vector<uint_fast8_t>> PERMS_3 = {{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}};
 
 const std::string EMPTY_CBA_6 = "0000000000000000000000000000000";
+const std::string FULL_CBA_6 = "1111111111111111111111111111111";
 
 string cbaToString(vector<uint_fast8_t> &cba)
 {
@@ -188,7 +189,7 @@ void calculateToRia(map<vector<uint8_t>, int> &mapToFill, int len = 6)
             vector<uint_fast8_t> newBoundaryColoring = ria.at(i);
             for (int k = 0; k < len; k++)
             {
-                newBoundaryColoring[k] = perms3[j][newBoundaryColoring[k]];
+                newBoundaryColoring[k] = PERMS_3[j][newBoundaryColoring[k]];
             }
             mapToFill[newBoundaryColoring] = i;
         }
@@ -259,15 +260,15 @@ map<tuple<int, int, int>, vector<vector<uint8_t>>> initConnectWaysMap()
     return map;
 }
 
-ColouringBitArray getCBA7ReducedComplement(ColouringBitArray cba)
+ColouringBitArray getCBAReducedComplement(ColouringBitArray cba, int len)
 {
     bool good = false;
     while (!good)
     {
         good = true;
-        for (int i = 0; i < colouring_bit_array_internal::Comparator(7).relevant_indices_absolute.size(); i++)
+        for (int i = 0; i < colouring_bit_array_internal::Comparator(len).relevant_indices_absolute.size(); i++)
         {
-            if (check_kempe_violation(cba, 7, i))
+            if (check_kempe_violation(cba, len, colouring_bit_array_internal::Comparator(7).relevant_indices_absolute[i]))
             {
                 good = false;
                 cba.set(ColouringBitArray::Index::to_index(i), false);
@@ -290,6 +291,16 @@ void updateFoundCsk(const std::map<std::string, bool> &foundCsk6Map, const std::
     }
     foundCSKFileOutput << "found " << foundCount << " / " << allCsk6AsStrings.size() << "\n";
     foundCSKFileOutput.close();
+}
+
+int countOnes(std::string str)
+{
+    int count = 0;
+    for (int i = 0; i < str.size(); i++)
+    {
+        count += str[i] == '1';
+    }
+    return count;
 }
 
 #endif

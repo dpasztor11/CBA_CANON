@@ -79,9 +79,8 @@ namespace ba_graph
         return true;
     }
 
-    bool check_kempe_violation(const ColouringBitArray &cba, uint_fast8_t len, int index)
+    bool check_kempe_violation(const ColouringBitArray &cba, uint_fast8_t len, std::vector<uint_fast8_t> vec)
     {
-        std::vector<uint_fast8_t> vec = colouring_bit_array_internal::comparators[len].relevant_indices_absolute[index];
         for (uint_fast8_t c1 = 0; c1 < 3; c1++)
             for (uint_fast8_t c2 = c1 + 1; c2 < 3; c2++)
             {
@@ -131,8 +130,8 @@ namespace ba_graph
 
     bool is_kempe_closed(const ColouringBitArray &cba, uint_fast8_t len)
     {
-        for (int i = 0; i < colouring_bit_array_internal::comparators[len].relevant_indices_absolute.size(); i++)
-            if (cba[ColouringBitArray::Index::to_index(i)] && check_kempe_violation(cba, len, i))
+        for (auto vec : colouring_bit_array_internal::comparators[len].relevant_indices_absolute)
+            if (cba[ColouringBitArray::Index(vec)] && check_kempe_violation(cba, len, vec))
                 return false;
         return true;
     }

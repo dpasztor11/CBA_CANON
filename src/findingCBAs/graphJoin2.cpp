@@ -51,7 +51,7 @@ std::vector<uint8_t> recolour(std::vector<uint8_t> tuple, int permIndex)
 {
     std::vector<uint8_t> newTuple;
     for (int i = 0; i < tuple.size(); i++)
-        newTuple.push_back(perms3[permIndex][tuple[i]]);
+        newTuple.push_back(PERMS_3[permIndex][tuple[i]]);
     return newTuple;
 }
 
@@ -159,6 +159,8 @@ Result joinWithSupergraph(std::vector<std::string> cbas,
     {
         tuples.push_back({});
         boundaryColouringIndeces.push_back(0);
+        while (cbas[i][boundaryColouringIndeces[i]] == '0')
+            boundaryColouringIndeces[i]++;
         recolours.push_back(0);
     }
 
@@ -180,12 +182,11 @@ Result joinWithSupergraph(std::vector<std::string> cbas,
                     skip = true;
             }
 
-            if (!skip)
+            if (!skip && i + 1 == vertexCount)
                 sol[toRia6[newTuple]] = '1';
         }
-        // update boundaryColouringIndeces, recolours
-        // printVec(boundaryColouringIndeces, std::cout);
-        // printVec(recolours, std::cout);
+        if (countOnes(sol) > 21)
+            return result;
         for (int i = 0; i < vertexCount; i++)
         {
             do
@@ -194,7 +195,11 @@ Result joinWithSupergraph(std::vector<std::string> cbas,
             } while (boundaryColouringIndeces[i] < RIA_LEN && cbas[i][boundaryColouringIndeces[i]] == '0');
 
             if (boundaryColouringIndeces[i] == RIA_LEN)
+            {
                 boundaryColouringIndeces[i] = 0;
+                while (cbas[i][boundaryColouringIndeces[i]] == '0')
+                    boundaryColouringIndeces[i]++;
+            }
             else
                 break;
             if (i + 1 == vertexCount)
@@ -203,7 +208,7 @@ Result joinWithSupergraph(std::vector<std::string> cbas,
                 for (int j = 1; j < vertexCount; j++)
                 {
                     recolours[j]++;
-                    if (recolours[j] == perms3.size())
+                    if (recolours[j] == PERMS_3.size())
                         recolours[j] = 0;
                     else
                         break;
@@ -233,7 +238,7 @@ Result joinWithSupergraph(std::vector<std::string> cbas,
     return result;
 }
 
-std::vector<std::vector<uint8_t>> getRandomPermutations(int len, std::mt19937 generator, int count)
+std::vector<std::vector<uint8_t>> getRandomPermutations(int len, std::mt19937 &generator, int count)
 {
     std::vector<std::vector<uint8_t>> perms;
     std::vector<uint8_t> perm;
@@ -249,10 +254,10 @@ std::vector<std::vector<uint8_t>> getRandomPermutations(int len, std::mt19937 ge
     return perms;
 }
 
-std::vector<std::string> getRandomCsks(std::mt19937 generator, int count)
+std::vector<std::string> getRandomCsks(std::mt19937 &generator, int count)
 {
     int cskCount = foundCsk6AsStrings.size();
-    std::uniform_int_distribution<std::uint32_t> distr(0, cskCount - 1);
+    std::uniform_int_distribution<std::uint32_t> distr(1, cskCount - 1);
 
     std::vector<std::string> cbas = {};
     for (int i = 0; i < count; i++)
@@ -296,6 +301,7 @@ void logMessage(std::string message)
     ofstream file;
     file.open("txt/foundCSK/CSK6FindingsLogger.txt", std::ios_base::app);
     file << message;
+    file.close();
 }
 
 int main()
@@ -320,7 +326,7 @@ int main()
     std::mt19937 generator(rd()); // seed the generator
 
     int done = 0;
-    int toCheck = 250000;
+    int toCheck = 100000;
 
     while (1)
     {
@@ -334,7 +340,7 @@ int main()
             std::execution::par,
             toCompute.begin(),
             toCompute.end(),
-            [generator](std::pair<int, Result> &p)
+            [&generator](std::pair<int, Result> &p)
             {
                 auto supergraph = supergraphs[0 /*p.first % supergraphs.size()*/];
                 int vertexCount = supergraph.size();
