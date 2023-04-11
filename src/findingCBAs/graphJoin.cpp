@@ -16,6 +16,7 @@
 using namespace ba_graph;
 
 const int maxOnesIn7Pole = 20;
+const bool ALLOW_7x7_TO_7 = false;
 
 const std::vector<std::vector<uint8_t>> riaArr7 = colouring_bit_array_internal::Comparator(7).relevant_indices_absolute;
 const std::vector<std::vector<uint8_t>> riaArr6 = colouring_bit_array_internal::Comparator(6).relevant_indices_absolute;
@@ -35,8 +36,6 @@ std::vector<long long> cskEq4;
 std::map<std::vector<uint8_t>, int> toRia6;
 std::map<std::vector<uint8_t>, int> toRia7;
 
-std::vector<std::vector<uint8_t>> perm = {{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}};
-
 // vector of all ways we can connect a-pole and b-pole to get c-pole
 std::map<std::tuple<int, int, int>, std::vector<std::vector<uint8_t>>> connectWaysMap;
 
@@ -53,50 +52,7 @@ int cskCount = 115;
 // assumes cba is in c-equivalence
 std::string cToCskEq6(std::string c)
 {
-    // c -> cs
-    std::vector<uint_fast8_t> temp;
-    for (int i = 0; i < riaArr6.size(); i++)
-        temp.push_back(c[i] - '0');
-    temp = canonize(from_canon(temp, 6), 6);
-    std::string cs = "";
-    for (int i = 0; i < riaArr6.size(); i++)
-        cs += temp[i] + '0';
-
-    // cs -> csk
-    return csToCsk6CanonsMap[cs];
-}
-
-// assumes cba is in c-equivalence
-std::string cToCskEq7(std::string c)
-{
-    // c -> cs
-    std::vector<uint_fast8_t> temp;
-    for (int i = 0; i < riaArr7.size(); i++)
-        temp.push_back(c[i] - '0');
-    temp = canonize(from_canon(temp, 7), 7);
-    std::string cs = "";
-    for (int i = 0; i < riaArr7.size(); i++)
-        cs += temp[i] + '0';
-
-    return cs;
-}
-
-int countOnes(std::string str)
-{
-    int count = 0;
-    for (int i = 0; i < str.size(); i++)
-    {
-        count += str[i] == '1';
-    }
-    return count;
-}
-
-std::vector<uint8_t> recolour(std::vector<uint8_t> tuple, int permIndex)
-{
-    std::vector<uint8_t> newTuple;
-    for (int i = 0; i < tuple.size(); i++)
-        newTuple.push_back(perm[permIndex][tuple[i]]);
-    return newTuple;
+    return csToCsk6CanonsMap[cToCs(c)];
 }
 
 void log(std::string csk, std::string c, std::string cba1, std::string cba2,
@@ -159,7 +115,7 @@ void connectCBAs(std::string cba1, int len1, std::string cba2, int len2, int len
 
                         bool joinValid = true;
 
-                        tuple2 = recolour(riaArr2[ria2], ria2Recolor);
+                        tuple2 = mapColours(riaArr2[ria2], ria2Recolor);
 
                         createdTuple = {};
                         int next = 0;
@@ -215,16 +171,15 @@ void connectCBAs(std::string cba1, int len1, std::string cba2, int len2, int len
             }
             else if (len3 == 7)
             {
-                // right now only does c -> cs
                 if (foundC7Set.count(sol) == 0)
                 {
                     foundC7Set.insert(sol);
-                    std::string csk = cToCskEq7(sol);
-                    if (foundCsk7Set.count(csk) == 0 && countOnes(csk) <= maxOnesIn7Pole)
+                    std::string cs = cToCs(sol, 7);
+                    if (foundCsk7Set.count(cs) == 0 && countOnes(cs) <= maxOnesIn7Pole)
                     {
-                        foundCsk7Set.insert(csk);
+                        foundCsk7Set.insert(cs);
                         count7++;
-                        foundCsk7AsStrings.push_back(csk);
+                        foundCsk7AsStrings.push_back(cs);
                     }
                 }
             }
@@ -262,7 +217,7 @@ void connectWithPrevious6And7Poles(std::string cba, int len, int i, int j)
     for (int k = 0; k <= j; k++)
     {
         connectCBAs(foundCsk7AsStrings[k], 7, cba, len, 6);
-        if (len != 7)
+        if (len != 7 || ALLOW_7x7_TO_7)
             connectCBAs(foundCsk7AsStrings[k], 7, cba, len, 7);
     }
 }

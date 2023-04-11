@@ -45,6 +45,15 @@ string numberToBinary(long long num, int vectorSize)
     return sol;
 }
 
+// use map: {0, 1, 2} -> {0, 1, 2} on tuple
+std::vector<uint8_t> mapColours(std::vector<uint8_t> tuple, int permIndex)
+{
+    std::vector<uint8_t> newTuple;
+    for (int i = 0; i < tuple.size(); i++)
+        newTuple.push_back(PERMS_3[permIndex][tuple[i]]);
+    return newTuple;
+}
+
 long getCskEqCount(int len)
 {
     switch (len)
@@ -301,6 +310,22 @@ int countOnes(std::string str)
         count += str[i] == '1';
     }
     return count;
+}
+
+// assumes cba is in c-equivalence
+std::string cToCs(std::string cba, int len = 6)
+{
+    int riaCount = colouring_bit_array_internal::Comparator(len).relevant_indices_absolute.size();
+
+    std::vector<uint_fast8_t> temp;
+    for (int i = 0; i < riaCount; i++)
+        temp.push_back(cba[i] - '0');
+    temp = canonize(from_canon(temp, len), len);
+
+    std::string cs = "";
+    for (int i = 0; i < riaCount; i++)
+        cs += temp[i] + '0';
+    return cs;
 }
 
 #endif
