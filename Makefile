@@ -87,16 +87,24 @@ graphJoin7x5:
 	./build/run.out
 
 graphJoin:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/graphJoin.cpp -o build/run.out
-	./build/run.out
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/graphJoin.cpp -o build/graphJoin.out
+	./build/graphJoin.out
 
 graphJoin2:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/graphJoin2.cpp -o build/run.out -ltbb
-	./build/run.out
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/graphJoin2.cpp -o build/graphJoin2.out -ltbb
+	./build/graphJoin2.out
 
 cycle:
 	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/cycle.cpp -o build/run.out
 	./build/run.out
+
+generateCskPoset:
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/other/generateCskPoset.cpp -o build/generateCskPoset.out
+	./build/generateCskPoset.out
+
+unfoundCsEq:
+	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/unfoundCsEq.cpp -o build/unfoundCsEq.out
+	./build/unfoundCsEq.out
 
 
 .PHONY: test debug run feasible_debug feasible_run 5poles run2 debug2 feasible_run_p test_kempe
