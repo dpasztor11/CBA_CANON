@@ -15,39 +15,11 @@ const int len = 6;
 // works for len == 6, 5 or 4
 const int csEqCount = getCsEqCount(len);
 const int cEqCount = getCEqCount(len);
-const int riaCount = colouring_bit_array_internal::Comparator(len).len; // relevant_indices_absolute
-const long long allOnes = (1 << riaCount) - 1;                          // 2^ria-1
 
 std::vector<long long> csEq;
 std::vector<long long> cEq;
 std::vector<long long> reducedCsEq;
 std::set<long long> reducedComplements;
-
-long long getReducedComplement(long long num)
-{
-    num = allOnes - num;
-    long long best = 0;
-    for (int i = 0; i < cEqCount; i++)
-    {
-        if ((num | cEq[i]) == num && cEq[i] > best)
-        {
-            best = cEq[i];
-        }
-    }
-
-    std::string bestStr = numberToBinary(best, riaCount);
-    // c -> cs
-    std::vector<uint_fast8_t> temp;
-    for (int i = 0; i < riaCount; i++)
-        temp.push_back(bestStr[i] - '0');
-    temp = canonize(from_canon(temp, len), len);
-
-    std::string cs = "";
-    for (int i = 0; i < riaCount; i++)
-        cs += temp[i] + '0';
-
-    return binaryToNumber(cs);
-}
 
 int main()
 {
@@ -68,15 +40,15 @@ int main()
         {
             std::cout << i << std::endl;
         }
-        long long reducedComplement = getReducedComplement(csEq[i]);
+        long long reducedComplement = getReducedComplementFromCEq(csEq[i], cEq);
         if (!reducedComplements.count(reducedComplement))
         {
             reducedCsEq.push_back(csEq[i]);
             reducedComplements.insert(reducedComplement);
             reducedComplementToIndex[reducedComplement] = i;
         }
-        canonsFile << numberToBinary(csEq[i], riaCount) << ", id:"
-                   << numberToBinary(csEq[reducedComplementToIndex[reducedComplement]], riaCount) << std::endl;
+        canonsFile << numberToBinary(csEq[i], RIA_COUNT_6) << ", id:"
+                   << numberToBinary(csEq[reducedComplementToIndex[reducedComplement]], RIA_COUNT_6) << std::endl;
     }
     canonsFile.close();
 
@@ -91,13 +63,13 @@ int main()
     reducedComplementCBAFile << "csEqCBA | complement | reduced complement" << std::endl;
     for (int i = 0; i < reducedCsEq.size(); i++)
     {
-        reducedComplementCBARawFile << numberToBinary(reducedCsEq[i], riaCount) << std::endl;
-        foundCSKFile << numberToBinary(reducedCsEq[i], riaCount) << " 0" << std::endl;
-        reducedComplementCBAFile << numberToBinary(reducedCsEq[i], riaCount);
+        reducedComplementCBARawFile << numberToBinary(reducedCsEq[i]) << std::endl;
+        foundCSKFile << numberToBinary(reducedCsEq[i]) << " 0" << std::endl;
+        reducedComplementCBAFile << numberToBinary(reducedCsEq[i]);
         reducedComplementCBAFile << " | ";
-        reducedComplementCBAFile << numberToBinary(allOnes - reducedCsEq[i], riaCount);
+        reducedComplementCBAFile << numberToBinary(FULL_CBA_6_NUM - reducedCsEq[i]);
         reducedComplementCBAFile << " | ";
-        reducedComplementCBAFile << numberToBinary(getReducedComplement(reducedCsEq[i]), riaCount) << std::endl;
+        reducedComplementCBAFile << numberToBinary(getReducedComplementFromCEq(reducedCsEq[i], cEq)) << std::endl;
     }
     reducedComplementCBAFile.close();
     reducedComplementCBARawFile.close();

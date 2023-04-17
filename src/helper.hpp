@@ -17,6 +17,9 @@ vector<vector<uint_fast8_t>> PERMS_3 = {{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 
 const std::string EMPTY_CBA_6 = "0000000000000000000000000000000";
 const std::string FULL_CBA_6 = "1111111111111111111111111111111";
 
+const int RIA_COUNT_6 = colouring_bit_array_internal::Comparator(6).relevant_indices_absolute.size();
+const long long FULL_CBA_6_NUM = (1 << RIA_COUNT_6) - 1;
+
 string cbaToString(vector<uint_fast8_t> &cba)
 {
     string s = "";
@@ -33,7 +36,7 @@ long long binaryToNumber(string binary)
     return sol;
 }
 
-string numberToBinary(long long num, int vectorSize)
+string numberToBinary(long long num, int vectorSize = RIA_COUNT_6)
 {
     string sol = "";
     long long toCheck = num;
@@ -271,20 +274,62 @@ map<tuple<int, int, int>, vector<vector<uint8_t>>> initConnectWaysMap()
 
 ColouringBitArray getCBAReducedComplement(ColouringBitArray cba, int len)
 {
+    auto ria = colouring_bit_array_internal::comparators[len].relevant_indices_absolute;
+
+    // complement
+    for (int i = 0; i < ria.size(); i++)
+    {
+        auto ii = ColouringBitArray::Index(ria[i]);
+        cba.set(ii, !cba.get(ii));
+    }
+
+    // reduction
     bool good = false;
     while (!good)
     {
         good = true;
-        for (int i = 0; i < colouring_bit_array_internal::Comparator(len).relevant_indices_absolute.size(); i++)
+        for (int i = 0; i < ria.size(); i++)
         {
-            if (check_kempe_violation(cba, len, colouring_bit_array_internal::Comparator(7).relevant_indices_absolute[i]))
+            auto ii = ColouringBitArray::Index(ria[i]);
+            if (cba.get(ii) && check_kempe_violation(cba, len, ria[i]))
             {
                 good = false;
-                cba.set(ColouringBitArray::Index::to_index(i), false);
+                cba.set(ii, false);
             }
         }
     }
     return cba;
+}
+
+// assumes cba is in c-equivalence
+std::string cToCs(std::string cba, int len = 6)
+{
+    int riaCount = colouring_bit_array_internal::Comparator(len).relevant_indices_absolute.size();
+
+    std::vector<uint_fast8_t> temp;
+    for (int i = 0; i < riaCount; i++)
+        temp.push_back(cba[i] - '0');
+    temp = canonize(from_canon(temp, len), len);
+
+    std::string cs = "";
+    for (int i = 0; i < riaCount; i++)
+        cs += temp[i] + '0';
+    return cs;
+}
+
+long long getReducedComplementFromCEq(long long num, std::vector<long long> &cEq)
+{
+    num = FULL_CBA_6_NUM - num;
+    long long best = 0;
+    for (int i = 0; i < cEq.size(); i++)
+    {
+        if ((num | cEq[i]) == num && cEq[i] > best)
+        {
+            best = cEq[i];
+        }
+    }
+
+    return binaryToNumber(cToCs(numberToBinary(best, RIA_COUNT_6)));
 }
 
 void updateFoundCsk(const std::map<std::string, bool> &foundCsk6Map, const std::vector<std::string> &allCsk6AsStrings)
@@ -310,22 +355,6 @@ int countOnes(std::string str)
         count += str[i] == '1';
     }
     return count;
-}
-
-// assumes cba is in c-equivalence
-std::string cToCs(std::string cba, int len = 6)
-{
-    int riaCount = colouring_bit_array_internal::Comparator(len).relevant_indices_absolute.size();
-
-    std::vector<uint_fast8_t> temp;
-    for (int i = 0; i < riaCount; i++)
-        temp.push_back(cba[i] - '0');
-    temp = canonize(from_canon(temp, len), len);
-
-    std::string cs = "";
-    for (int i = 0; i < riaCount; i++)
-        cs += temp[i] + '0';
-    return cs;
 }
 
 #endif
