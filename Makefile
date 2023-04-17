@@ -1,110 +1,44 @@
+FLAGS_COMMON = -std=c++17 -pedantic -Wall -Wextra -fmax-errors=3
+FLAGS_DEBUG = -g -O0 -DDEBUG -DBA_GRAPH_DEBUG $(FLAGS_COMMON)
+FLAGS_RELEASE = -O3 -ltbb $(FLAGS_COMMON)
+
+FINDING_CBAS_TARGETS = graphJoin graphJoin2 generateCSKSolutions generateCSKSolutions2
+EQUIVALENCE_GENERATION_TARGETS = generateCSKEq generateCEqCSEq
+EQUIVALENCE_GENERATION_OLD_TARGETS = generatefeasibleCBA generatefeasibleCBA_parallel
+OTHER_TARGETS = unfoundCsEq generateCskPoset
+
+define generate_compile_rule
+$(2): | createBuildFolders/$(1)
+	g++ $(FLAGS_RELEASE) src/$(1)/$(2).cpp -o build/$(1)/$(2).out -ltbb
+	./build/$(1)/$(2).out
+endef
+
+#define generate_compile_test_rule
+#$(1):
+#	g++ $(FLAGS_RELEASE) tests/$(1).cpp -o build/$(1)/$(2).out -ltbb
+#	./build/$(1)/$(2).out
+#endef
+
+# Generates rules for all targets
+$(foreach target, $(FINDING_CBAS_TARGETS), $(eval $(call generate_compile_rule,findingCBAs,$(target))))
+$(foreach target, $(EQUIVALENCE_GENERATION_TARGETS), $(eval $(call generate_compile_rule,EquivalenceGeneration,$(target))))
+$(foreach target, $(EQUIVALENCE_GENERATION_OLD_TARGETS), $(eval $(call generate_compile_rule,EquivalenceGeneration/old,$(target))))
+$(foreach target, $(OTHER_TARGETS), $(eval $(call generate_compile_rule,other,$(target))))
+
+
+createBuildFolders/%:
+	mkdir -p build/$*
+
 test:
-	g++ -std=c++17 -g -O0 -pedantic -Wall -Wextra -fmax-errors=3 -DDEBUG -DBA_GRAPH_DEBUG test_colouring_bit_array_canon.cpp -o build/test.out
+	g++ $(FLAGS_DEBUG) test_colouring_bit_array_canon.cpp -o build/test.out
 	./build/test.out
 
 test_kempe:
-	g++ -std=c++17 -g -O0 -pedantic -Wall -Wextra -fmax-errors=3 -DDEBUG -DBA_GRAPH_DEBUG test_kempe.cpp -o build/test_kempe.out
+	g++ $(FLAGS_DEBUG) test_kempe.cpp -o build/test_kempe.out
 	./build/test_kempe.out
 
-debug:
-	g++ -std=c++17 -g -O0 -pedantic -Wall -Wextra -fmax-errors=3 -DDEBUG -DBA_GRAPH_DEBUG generateCBAs.cpp -o build/debug.out
-	./build/debug.out
-
-run:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  generateCBAs.cpp -o build/run.out
-	./build/run.out
-
-debug2:
-	g++ -std=c++17 -g -O0 -pedantic -Wall -Wextra -fmax-errors=3 -DDEBUG -DBA_GRAPH_DEBUG generateCBAs2.cpp -o build/debug2.out
-	./build/debug2.out
-
-run2:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  generateCBAs2.cpp -o build/run2.out
-	./build/run2.out
-
-feasible_debug:
-	g++ -std=c++17 -g -O0 -pedantic -Wall -Wextra -fmax-errors=3 -DDEBUG -DBA_GRAPH_DEBUG generatefeasibleCBA.cpp -o build/feasibledebug.out
-	./build/feasibledebug.out
-
-feasible_run:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  generatefeasibleCBA.cpp -o build/feasiblerun.out
-	./build/feasiblerun.out
-
-feasible_run_p:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 generatefeasibleCBA_parallel.cpp -o build/feasiblerun_p.out -ltbb
-	./build/feasiblerun_p.out
-
 5poles:
-	g++ -std=c++17 -g -O0 -pedantic -Wall -Wextra -fconcepts -fmax-errors=3 -I../../Git/ba-graph/include -DDEBUG -DBA_GRAPH_DEBUG 5polestest.cpp -o build/5polestest.out
+	g++ $(FLAGS_DEBUG) -fconcepts -I../../Git/ba-graph/include 5polestest.cpp -o build/5polestest.out
 	./build/5polestest.out
 
-reducedComplement:
-	g++ -std=c++17 -g -O3 -pedantic -Wall -Wextra -fmax-errors=3 src/EquivalenceGeneration/generateCSKEq.cpp -o build/generateCSKEq.out
-	./build/generateCSKEq.out
-
-generateMinimal:
-	g++ -std=c++17 -g -O3 -pedantic -Wall -Wextra -fmax-errors=3 generateCBAMinimal_parallel.cpp -o build/generateCBAMinimal_parallel.out -ltbb
-	./build/generateCBAMinimal_parallel.out
-
-generateFeasibleToFile:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 generateCBAToFile_parallel.cpp -o build/generateCBAToFile_parallel.out -ltbb
-	./build/generateCBAToFile_parallel.out
-
-generateCEq:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 generateCEq.cpp -o build/generateCEq.out -ltbb
-	./build/generateCEq.out
-
-generateCEqCSEq:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 src/EquivalenceGeneration/generateCEqCSEq.cpp -o build/generateCEqCSEq.out -ltbb
-	./build/generateCEqCSEq.out
-
-generateCSKEq:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 src/EquivalenceGeneration/generateCSKEq.cpp -o build/generateCSKEq.out -ltbb
-	./build/generateCSKEq.out
-
-generatePoset:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3 posetCSKEq.cpp -o build/posetCSKEq.out
-	./build/posetCSKEq.out
-
-generateSolutions:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/generateCSKSolutions.cpp -o build/run.out
-	./build/run.out
-
-graphJoin6x6:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/wip/graphJoin6x6.cpp -o build/run.out
-	./build/run.out
-
-graphJoin7:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/wip/graphJoin7.cpp -o build/run.out
-	./build/run.out
-
-experiment1:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/experiment1.cpp -o build/run.out
-	./build/run.out
-
-graphJoin7x5:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/wip/graphJoin7x5.cpp -o build/run.out
-	./build/run.out
-
-graphJoin:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/graphJoin.cpp -o build/graphJoin.out
-	./build/graphJoin.out
-
-graphJoin2:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/graphJoin2.cpp -o build/graphJoin2.out -ltbb
-	./build/graphJoin2.out
-
-cycle:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/cycle.cpp -o build/run.out
-	./build/run.out
-
-generateCskPoset:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/other/generateCskPoset.cpp -o build/generateCskPoset.out
-	./build/generateCskPoset.out
-
-unfoundCsEq:
-	g++ -std=c++17 -O3 -pedantic -Wall -Wextra -fmax-errors=3  src/findingCBAs/unfoundCsEq.cpp -o build/unfoundCsEq.out
-	./build/unfoundCsEq.out
-
-
-.PHONY: test debug run feasible_debug feasible_run 5poles run2 debug2 feasible_run_p test_kempe
+.PHONY: test 5poles test_kempe createBuildFolders/%
