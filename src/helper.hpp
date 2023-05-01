@@ -16,6 +16,8 @@ vector<vector<uint_fast8_t>> PERMS_3 = {{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 
 
 const string EMPTY_CBA_6 = "0000000000000000000000000000000";
 const string FULL_CBA_6 = "1111111111111111111111111111111";
+const string EMPTY_CBA_7 = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+const string FULL_CBA_7 = "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
 
 const int RIA_COUNT_6 = colouring_bit_array_internal::Comparator(6).relevant_indices_absolute.size();
 const long long FULL_CBA_6_NUM = (1 << RIA_COUNT_6) - 1;
@@ -232,7 +234,7 @@ void calculateToRia(map<vector<uint8_t>, int> &mapToFill, int len = 6)
     return;
 }
 
-void printVec(const vector<uint8_t> &vec, ostream &file)
+void printVec(const vector<uint8_t> &vec, ostream &file = cout)
 {
     file << "[";
     for (const auto &value : vec)

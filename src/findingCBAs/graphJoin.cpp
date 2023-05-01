@@ -16,6 +16,7 @@
 using namespace ba_graph;
 
 const int MAX_ONES_IN_7_POLE = 20;
+// joining two 7poles to create a 7pole takes a long time
 const bool ALLOW_7x7_TO_7 = false;
 
 const std::vector<std::vector<uint8_t>> riaArr7 = colouring_bit_array_internal::Comparator(7).relevant_indices_absolute;
@@ -249,6 +250,8 @@ void printProgress(int i, int j)
     std::cout << "-----------------------------------------" << std::endl;
 }
 
+#ifndef TEST_MODE
+
 int main()
 {
     getCanonsFromFile(6, csToCsk6CanonsMap);
@@ -287,7 +290,6 @@ int main()
         connectWithPrevious6And7Poles(foundCsk6AsStrings[i], 6, i, j - 1);
         if (i + 1 == foundCsk6AsStrings.size())
         {
-            // mali by sme koncit, tak vyskusame povytvarat 7polovy uzaver
             std::cout << "!!!switching to 7-poles!!!" << std::endl;
             for (; j < foundCsk7AsStrings.size(); j++)
             {
@@ -306,3 +308,5 @@ int main()
     updateFoundCsk(foundCsk6Map, allCsk6AsStrings);
     return 0;
 }
+
+#endif

@@ -37,6 +37,14 @@ test_kempe:
 	g++ $(FLAGS_DEBUG) test_kempe.cpp -o build/test_kempe.out
 	./build/test_kempe.out
 
+test_reduced:
+	g++ $(FLAGS_DEBUG) tests/test_getReducedComplement.cpp -o build/test_getReducedComplement.out
+	./build/test_getReducedComplement.out
+
+test_connectCBAs:
+	g++ $(FLAGS_DEBUG) tests/test_connectCBAs.cpp -o build/test_connectCBAs.out
+	./build/test_connectCBAs.out
+
 5poles:
 	g++ $(FLAGS_DEBUG) -fconcepts -I../../Git/ba-graph/include 5polestest.cpp -o build/5polestest.out
 	./build/5polestest.out
