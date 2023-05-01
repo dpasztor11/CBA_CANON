@@ -35,5 +35,5 @@ int main()
     }
     minimalCsEqFile << "Count: " << minimalCsEq.size() << std::endl;
     minimalCsEqFile.close();
-    storeCBAsToFile(minimalCsEqFileString, minimalCsEq, riaCount);
+    storeCbasToFile(minimalCsEqFileString, minimalCsEq, riaCount);
 }

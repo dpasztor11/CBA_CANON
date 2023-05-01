@@ -16,7 +16,7 @@ int main()
     std::vector<int> csNotFound;
     for (int i = 0; i < csEq.size(); i++)
     {
-        std::string cs = numberToBinary(csEq[i], 31);
+        std::string cs = longLongCbaToString(csEq[i], 31);
         if (!foundCsk6Map[csToCsk6CanonsMap[cToCs(cs)]])
         {
             count++;

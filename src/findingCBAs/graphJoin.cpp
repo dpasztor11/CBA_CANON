@@ -15,7 +15,7 @@
 
 using namespace ba_graph;
 
-const int maxOnesIn7Pole = 20;
+const int MAX_ONES_IN_7_POLE = 20;
 const bool ALLOW_7x7_TO_7 = false;
 
 const std::vector<std::vector<uint8_t>> riaArr7 = colouring_bit_array_internal::Comparator(7).relevant_indices_absolute;
@@ -55,6 +55,14 @@ std::string cToCskEq6(std::string c)
     return csToCsk6CanonsMap[cToCs(c)];
 }
 
+// assumes cba is in c-equivalence
+std::string cToCskEq7(std::string c)
+{
+    std::string cs = cToCs(c);
+    std::string csk = getCbaReducedComplement(cs, 7);
+    return csk;
+}
+
 void log(std::string csk, std::string c, std::string cba1, std::string cba2,
          std::vector<uint_fast8_t> connectWay, std::vector<uint_fast8_t> connectOrder)
 {
@@ -69,120 +77,134 @@ void log(std::string csk, std::string c, std::string cba1, std::string cba2,
     printVec(connectOrder, file);
 }
 
-// CBA1 is a (len1)-pole, CBA2 is a (len2)-pole
-// we want to try all ways to connect them to (len3)-pole
-void connectCBAs(std::string cba1, int len1, std::string cba2, int len2, int len3)
+std::string connectCBAs(std::string cba1, int len1,
+                        std::string cba2, int len2, int len3,
+                        std::vector<uint_fast8_t> &connectOrder, std::vector<uint_fast8_t> &connectWay)
 {
-    std::vector<uint8_t> tuple1;
-    std::vector<uint8_t> tuple2;
-    std::vector<uint8_t> createdTuple;
     auto riaArr = colouring_bit_array_internal::Comparator(len1).relevant_indices_absolute;
     auto riaArr2 = colouring_bit_array_internal::Comparator(len2).relevant_indices_absolute;
     auto riaArr3 = colouring_bit_array_internal::Comparator(len3).relevant_indices_absolute;
+    std::vector<uint8_t> tuple1;
+    std::vector<uint8_t> tuple2;
+    std::vector<uint8_t> createdTuple;
+    auto toRia = (len3 == 6 ? toRia6 : toRia7);
+
+    std::string sol = "";
+    for (int i = 0; i < riaArr3.size(); i++)
+        sol += "0";
+
+    // we will check all boundary colourings
+    for (long long ria1 = 0; ria1 < riaArr.size(); ria1++)
+    {
+        // sleep(1);
+        if (cba1[ria1] == '0')
+            continue;
+
+        tuple1 = riaArr[ria1];
+
+        // how to permutate colours in ria2
+        for (long long ria2Recolor = 0; ria2Recolor < 6; ria2Recolor++)
+        {
+
+            // check all ria2 colours
+            for (long long ria2 = 0; ria2 < riaArr2.size(); ria2++)
+            {
+                if (cba2[ria2] == '0')
+                    continue;
+
+                bool joinValid = true;
+
+                tuple2 = mapColours(riaArr2[ria2], ria2Recolor);
+
+                createdTuple = {};
+                int next = 0;
+                for (int l = 0; joinValid && l < len1; l++)
+                {
+                    // that means it is a dangling edge
+                    if (connectOrder[l] >= len2)
+                    {
+                        createdTuple.push_back(tuple1[l]);
+                    }
+                    else if (connectWay[next] == 0)
+                    {
+                        next++;
+                        createdTuple.push_back(tuple1[l]);
+                        createdTuple.push_back(tuple2[connectOrder[l]]);
+                    }
+                    else if (connectWay[next] == 1)
+                    {
+                        next++;
+                        joinValid = tuple1[l] == tuple2[connectOrder[l]];
+                    }
+                    else if (connectWay[next] == 2)
+                    {
+                        next++;
+                        joinValid = tuple1[l] != tuple2[connectOrder[l]];
+                        createdTuple.push_back(3 - tuple1[l] - tuple2[connectOrder[l]]);
+                    }
+                }
+                if (!joinValid)
+                    continue;
+
+                sol[toRia[createdTuple]] = '1';
+            }
+        }
+    }
+    return sol;
+}
+
+std::string processFoundCBA(std::string cba, int len3)
+{
+    if (len3 == 6)
+    {
+        if (foundC6Set.count(cba) == 0)
+        {
+            foundC6Set.insert(cba);
+            std::string csk = cToCskEq6(cba);
+            if (!foundCsk6Map[csk])
+            {
+                foundCsk6Map[csk] = true;
+                count6++;
+                foundCsk6AsStrings.push_back(csk);
+                return csk;
+            }
+        }
+    }
+    else if (len3 == 7)
+    {
+        if (foundC7Set.count(cba) == 0)
+        {
+            foundC7Set.insert(cba);
+            std::string cs = cToCs(cba, 7);
+            if (foundCsk7Set.count(cs) == 0 && countOnes(cs) <= MAX_ONES_IN_7_POLE)
+            {
+                foundCsk7Set.insert(cs);
+                count7++;
+                foundCsk7AsStrings.push_back(cs);
+            }
+        }
+    }
+    return "";
+}
+
+// CBA1 is a (len1)-pole, CBA2 is a (len2)-pole
+// we want to try all ways to connect them to (len3)-pole
+void connectCBAsAllWays(std::string cba1, int len1, std::string cba2, int len2, int len3)
+{
     for (auto connectWay : connectWaysMap[std::make_tuple(len1, len2, len3)])
     {
         std::vector<uint8_t> connectOrder;
         std::vector<uint8_t> start;
         for (int i = 0; i < len1; i++)
             connectOrder.push_back(i);
+
         start = connectOrder;
         while (1)
         {
-            auto toRia = (len3 == 6 ? toRia6 : toRia7);
-
-            std::string sol = "";
-            for (int i = 0; i < riaArr3.size(); i++)
-                sol += "0";
-
-            // we will check all boundary colourings
-            for (long long ria1 = 0; ria1 < riaArr.size(); ria1++)
-            {
-                // sleep(1);
-                if (cba1[ria1] == '0')
-                    continue;
-
-                tuple1 = riaArr[ria1];
-
-                // how to permutate colours in ria2
-                for (long long ria2Recolor = 0; ria2Recolor < 6; ria2Recolor++)
-                {
-
-                    // check all ria2 colours
-                    for (long long ria2 = 0; ria2 < riaArr2.size(); ria2++)
-                    {
-                        if (cba2[ria2] == '0')
-                            continue;
-
-                        bool joinValid = true;
-
-                        tuple2 = mapColours(riaArr2[ria2], ria2Recolor);
-
-                        createdTuple = {};
-                        int next = 0;
-                        for (int l = 0; joinValid && l < len1; l++)
-                        {
-                            // that means it is a dangling edge
-                            if (connectOrder[l] >= len2)
-                            {
-                                createdTuple.push_back(tuple1[l]);
-                            }
-                            else if (connectWay[next] == 0)
-                            {
-                                next++;
-                                createdTuple.push_back(tuple1[l]);
-                                createdTuple.push_back(tuple2[connectOrder[l]]);
-                            }
-                            else if (connectWay[next] == 1)
-                            {
-                                next++;
-                                joinValid = tuple1[l] == tuple2[connectOrder[l]];
-                            }
-                            else if (connectWay[next] == 2)
-                            {
-                                next++;
-                                joinValid = tuple1[l] != tuple2[connectOrder[l]];
-                                createdTuple.push_back(3 - tuple1[l] - tuple2[connectOrder[l]]);
-                            }
-                        }
-                        if (!joinValid)
-                            continue;
-
-                        sol[toRia[createdTuple]] = '1';
-                    }
-                }
-            }
-
-            if (len3 == 6)
-            {
-                if (foundC6Set.count(sol) == 0)
-                {
-                    foundC6Set.insert(sol);
-                    std::string csk = cToCskEq6(sol);
-                    if (!foundCsk6Map[csk])
-                    {
-                        foundCsk6Map[csk] = true;
-                        count6++;
-                        std::cout << count6 << ". 6 sol found!!! " << csk << std::endl;
-                        std::cout << "from " << sol << std::endl;
-                        foundCsk6AsStrings.push_back(csk);
-                        log(csk, sol, cba1, cba2, connectWay, connectOrder);
-                    }
-                }
-            }
-            else if (len3 == 7)
-            {
-                if (foundC7Set.count(sol) == 0)
-                {
-                    foundC7Set.insert(sol);
-                    std::string cs = cToCs(sol, 7);
-                    if (foundCsk7Set.count(cs) == 0 && countOnes(cs) <= maxOnesIn7Pole)
-                    {
-                        foundCsk7Set.insert(cs);
-                        count7++;
-                        foundCsk7AsStrings.push_back(cs);
-                    }
-                }
-            }
+            std::string sol = connectCBAs(cba1, len1, cba2, len2, len3, connectOrder, connectWay);
+            std::string foundCsk = processFoundCBA(sol, len3);
+            if (foundCsk != "")
+                log(foundCsk, sol, cba1, cba2, connectWay, connectOrder);
 
             next_permutation(connectOrder.begin(), connectOrder.end());
             if (connectOrder == start)
@@ -195,30 +217,28 @@ void connectWithAll4And5Poles(std::string cba, int len)
 {
     for (int i = 0; i < foundCsk4AsStrings.size(); i++)
     {
-        connectCBAs(cba, len, foundCsk4AsStrings[i], 4, 6);
-        connectCBAs(cba, len, foundCsk4AsStrings[i], 4, 7);
+        connectCBAsAllWays(cba, len, foundCsk4AsStrings[i], 4, 6);
+        connectCBAsAllWays(cba, len, foundCsk4AsStrings[i], 4, 7);
     }
     for (int i = 0; i < foundCsk5AsStrings.size(); i++)
     {
-        connectCBAs(cba, len, foundCsk5AsStrings[i], 5, 6);
-        connectCBAs(cba, len, foundCsk5AsStrings[i], 5, 7);
+        connectCBAsAllWays(cba, len, foundCsk5AsStrings[i], 5, 6);
+        connectCBAsAllWays(cba, len, foundCsk5AsStrings[i], 5, 7);
     }
 }
 
-// i -> index of last 6pole
-// j -> index of last 7pole
-void connectWithPrevious6And7Poles(std::string cba, int len, int i, int j)
+void connectWithPrevious6And7Poles(std::string cba, int len, int last6poleIndex, int last7poleIndex)
 {
-    for (int k = 0; k <= i; k++)
+    for (int k = 0; k <= last6poleIndex; k++)
     {
-        connectCBAs(cba, len, foundCsk6AsStrings[k], 6, 6);
-        connectCBAs(cba, len, foundCsk6AsStrings[k], 6, 7);
+        connectCBAsAllWays(cba, len, foundCsk6AsStrings[k], 6, 6);
+        connectCBAsAllWays(cba, len, foundCsk6AsStrings[k], 6, 7);
     }
-    for (int k = 0; k <= j; k++)
+    for (int k = 0; k <= last7poleIndex; k++)
     {
-        connectCBAs(foundCsk7AsStrings[k], 7, cba, len, 6);
+        connectCBAsAllWays(foundCsk7AsStrings[k], 7, cba, len, 6);
         if (len != 7 || ALLOW_7x7_TO_7)
-            connectCBAs(foundCsk7AsStrings[k], 7, cba, len, 7);
+            connectCBAsAllWays(foundCsk7AsStrings[k], 7, cba, len, 7);
     }
 }
 
@@ -244,17 +264,17 @@ int main()
     std::vector<std::string> allCsk6AsStrings;
     for (long long i = 0; i < (long long)cskEq6.size(); i++)
     {
-        std::string cskString = numberToBinary(cskEq6[i], riaArr6.size());
+        std::string cskString = longLongCbaToString(cskEq6[i], riaArr6.size());
         allCsk6AsStrings.push_back(cskString);
         if (foundCsk6Map[cskString])
             foundCsk6AsStrings.push_back(cskString);
     }
 
     for (long long i = 0; i < (long long)cskEq5.size(); i++)
-        foundCsk5AsStrings.push_back(numberToBinary(cskEq5[i], riaArr5.size()));
+        foundCsk5AsStrings.push_back(longLongCbaToString(cskEq5[i], riaArr5.size()));
 
     for (long long i = 0; i < (long long)cskEq4.size(); i++)
-        foundCsk4AsStrings.push_back(numberToBinary(cskEq4[i], riaArr4.size()));
+        foundCsk4AsStrings.push_back(longLongCbaToString(cskEq4[i], riaArr4.size()));
 
     foundCsk7AsStrings = {};
 
@@ -284,6 +304,5 @@ int main()
     }
 
     updateFoundCsk(foundCsk6Map, allCsk6AsStrings);
-
     return 0;
 }

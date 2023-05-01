@@ -314,7 +314,7 @@ int main()
     std::vector<std::string> allCsk6AsStrings;
     for (long long i = 0; i < (long long)cskEq6.size(); i++)
     {
-        std::string cskString = numberToBinary(cskEq6[i], riaArr6.size());
+        std::string cskString = longLongCbaToString(cskEq6[i], riaArr6.size());
         allCsk6AsStrings.push_back(cskString);
         if (foundCsk6Map[cskString])
             foundCsk6AsStrings.push_back(cskString);

@@ -51,7 +51,7 @@ std::vector<std::string> toStrings(std::vector<long long> cbas)
     std::vector<std::string> a;
     for (int i = 0; i < cbas.size(); i++)
     {
-        a.push_back(numberToBinary(getMaximalCsk(cbas[i]), 31));
+        a.push_back(longLongCbaToString(getMaximalCsk(cbas[i]), 31));
     }
     return a;
 }

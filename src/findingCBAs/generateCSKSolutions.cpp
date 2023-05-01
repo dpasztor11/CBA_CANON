@@ -87,7 +87,7 @@ int main()
                 for (unsigned int k = 0; k < expold.size(); k++)
                     std::cout << (int)expold[k] << ",";
                 std::cout << "  Operation 0,0 \n";
-                std::string s = cbaToString(expnew);
+                std::string s = vectorCbaToString(expnew);
                 std::string sCanon = canonsMap[s];
                 foundCskSet.insert(sCanon);
             }
@@ -128,7 +128,7 @@ int main()
                         for (unsigned int k = 0; k < expold.size(); k++)
                             std::cout << (int)expold[k] << ",";
                         std::cout << "  Operation 0,1:" << i << "\n";
-                        std::string s = cbaToString(expnew);
+                        std::string s = vectorCbaToString(expnew);
                         std::string sCanon = canonsMap[s];
                         std::cout << "found: " << s << " with canon " << sCanon << "\n";
                         foundCskSet.insert(sCanon);
@@ -167,7 +167,7 @@ int main()
                                     for (unsigned int k = 0; k < expold.size(); k++)
                                         std::cout << (int)expold[k] << ",";
                                     std::cout << "  Operation 1,2:" << i << "," << j << "\n";
-                                    std::string s = cbaToString(expnew);
+                                    std::string s = vectorCbaToString(expnew);
                                     std::string sCanon = canonsMap[s];
                                     std::cout << "found: " << s << " with canon " << sCanon << "\n";
                                     foundCskSet.insert(sCanon);
@@ -195,7 +195,7 @@ int main()
                                         for (unsigned int k = 0; k < expold.size(); k++)
                                             std::cout << (int)expold[k] << ",";
                                         std::cout << "  Operation 2,2:" << i << "," << j << "\n";
-                                        std::string s = cbaToString(expnew);
+                                        std::string s = vectorCbaToString(expnew);
                                         std::string sCanon = canonsMap[s];
                                         std::cout << "found: " << s << " with canon " << sCanon << "\n";
                                         foundCskSet.insert(sCanon);
@@ -230,7 +230,7 @@ int main()
                                         for (unsigned int k = 0; k < expold.size(); k++)
                                             std::cout << (int)expold[k] << ",";
                                         std::cout << "  Operation 1,1:" << i << "," << j << "\n";
-                                        std::string s = cbaToString(expnew);
+                                        std::string s = vectorCbaToString(expnew);
                                         std::string sCanon = canonsMap[s];
                                         std::cout << "found: " << s << " with canon " << sCanon << "\n";
                                         foundCskSet.insert(sCanon);

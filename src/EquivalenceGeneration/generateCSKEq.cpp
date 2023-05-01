@@ -47,8 +47,8 @@ int main()
             reducedComplements.insert(reducedComplement);
             reducedComplementToIndex[reducedComplement] = i;
         }
-        canonsFile << numberToBinary(csEq[i], RIA_COUNT_6) << ", id:"
-                   << numberToBinary(csEq[reducedComplementToIndex[reducedComplement]], RIA_COUNT_6) << std::endl;
+        canonsFile << longLongCbaToString(csEq[i], RIA_COUNT_6) << ", id:"
+                   << longLongCbaToString(csEq[reducedComplementToIndex[reducedComplement]], RIA_COUNT_6) << std::endl;
     }
     canonsFile.close();
 
@@ -63,13 +63,13 @@ int main()
     reducedComplementCBAFile << "csEqCBA | complement | reduced complement" << std::endl;
     for (int i = 0; i < reducedCsEq.size(); i++)
     {
-        reducedComplementCBARawFile << numberToBinary(reducedCsEq[i]) << std::endl;
-        foundCSKFile << numberToBinary(reducedCsEq[i]) << " 0" << std::endl;
-        reducedComplementCBAFile << numberToBinary(reducedCsEq[i]);
+        reducedComplementCBARawFile << longLongCbaToString(reducedCsEq[i]) << std::endl;
+        foundCSKFile << longLongCbaToString(reducedCsEq[i]) << " 0" << std::endl;
+        reducedComplementCBAFile << longLongCbaToString(reducedCsEq[i]);
         reducedComplementCBAFile << " | ";
-        reducedComplementCBAFile << numberToBinary(FULL_CBA_6_NUM - reducedCsEq[i]);
+        reducedComplementCBAFile << longLongCbaToString(FULL_CBA_6_NUM - reducedCsEq[i]);
         reducedComplementCBAFile << " | ";
-        reducedComplementCBAFile << numberToBinary(getReducedComplementFromCEq(reducedCsEq[i], cEq)) << std::endl;
+        reducedComplementCBAFile << longLongCbaToString(getReducedComplementFromCEq(reducedCsEq[i], cEq)) << std::endl;
     }
     reducedComplementCBAFile.close();
     reducedComplementCBARawFile.close();

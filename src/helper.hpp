@@ -14,13 +14,17 @@ using namespace std;
 
 vector<vector<uint_fast8_t>> PERMS_3 = {{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}};
 
-const std::string EMPTY_CBA_6 = "0000000000000000000000000000000";
-const std::string FULL_CBA_6 = "1111111111111111111111111111111";
+const string EMPTY_CBA_6 = "0000000000000000000000000000000";
+const string FULL_CBA_6 = "1111111111111111111111111111111";
 
 const int RIA_COUNT_6 = colouring_bit_array_internal::Comparator(6).relevant_indices_absolute.size();
 const long long FULL_CBA_6_NUM = (1 << RIA_COUNT_6) - 1;
 
-string cbaToString(vector<uint_fast8_t> &cba)
+//
+//  CONVERSIONS
+//
+
+string vectorCbaToString(vector<uint_fast8_t> &cba)
 {
     string s = "";
     for (unsigned int k = 0; k < cba.size(); k++)
@@ -28,7 +32,15 @@ string cbaToString(vector<uint_fast8_t> &cba)
     return s;
 }
 
-long long binaryToNumber(string binary)
+vector<uint_fast8_t> vectorCbaFromString(string cba)
+{
+    vector<uint_fast8_t> vecCba;
+    for (unsigned int k = 0; k < cba.size(); k++)
+        vecCba.push_back(cba[k] - '0');
+    return vecCba;
+}
+
+long long longLongCbaFromString(string binary)
 {
     long long sol = 0;
     for (int i = 0; i < (int)binary.length(); i++)
@@ -36,7 +48,7 @@ long long binaryToNumber(string binary)
     return sol;
 }
 
-string numberToBinary(long long num, int vectorSize = RIA_COUNT_6)
+string longLongCbaToString(long long num, int vectorSize = RIA_COUNT_6)
 {
     string sol = "";
     long long toCheck = num;
@@ -48,10 +60,21 @@ string numberToBinary(long long num, int vectorSize = RIA_COUNT_6)
     return sol;
 }
 
-// use map: {0, 1, 2} -> {0, 1, 2} on tuple
-std::vector<uint8_t> mapColours(std::vector<uint8_t> tuple, int permIndex)
+ColouringBitArray classCbaFromString(string cba, int len)
 {
-    std::vector<uint8_t> newTuple;
+    return from_canon(vectorCbaFromString(cba), len);
+}
+
+string classCbaToString(ColouringBitArray &cba, int len)
+{
+    std::vector<uint_fast8_t> stringCba = canonize(cba, len);
+    return vectorCbaToString(stringCba);
+}
+
+// use map f: {0, 1, 2} -> {0, 1, 2} on tuple
+vector<uint8_t> mapColours(vector<uint8_t> tuple, int permIndex)
+{
+    vector<uint8_t> newTuple;
     for (int i = 0; i < tuple.size(); i++)
         newTuple.push_back(PERMS_3[permIndex][tuple[i]]);
     return newTuple;
@@ -68,7 +91,7 @@ long getCskEqCount(int len)
     case 4:
         return 4;
     default:
-        throw;
+        throw invalid_argument("Invalid length");
     }
 }
 
@@ -83,7 +106,7 @@ long getCsEqCount(int len)
     case 4:
         return 6;
     default:
-        throw;
+        throw invalid_argument("Invalid length");
     }
 }
 
@@ -98,7 +121,7 @@ long getCEqCount(int len)
     case 4:
         return 12;
     default:
-        throw;
+        throw invalid_argument("Invalid length");
     }
 }
 
@@ -116,7 +139,7 @@ vector<long long> getFromFile(int len, int count, int linesToSkip, string filePa
     for (long long i = 0; i < count; i++)
     {
         file >> temp;
-        vectorReadFromFile.push_back(binaryToNumber(temp));
+        vectorReadFromFile.push_back(longLongCbaFromString(temp));
     }
     file.close();
     return vectorReadFromFile;
@@ -182,12 +205,12 @@ void getFoundCskMapFromFile(int len, map<string, bool> &foundCskMap)
     foundCskFile.close();
 }
 
-void storeCBAsToFile(string fileName, vector<long long> cbas, int vectorSize)
+void storeCbasToFile(string fileName, vector<long long> cbas, int vectorSize)
 {
     ofstream file;
     file.open(fileName);
     for (int i = 0; i < (int)cbas.size(); i++)
-        file << numberToBinary(cbas[i], vectorSize) << endl;
+        file << longLongCbaToString(cbas[i], vectorSize) << endl;
     file.close();
 }
 
@@ -253,7 +276,7 @@ void addConnectWaysToMap(map<tuple<int, int, int>, vector<vector<uint8_t>>> &map
 // value: vector of vectors that decribe ways to connect a-pole and b-pole to get c-pole
 // 2 -> connect 2 dangling edges and create a new vertex and edge
 // 1 -> connect 2 dangling edges
-// 0 -> don't connect 2 dangling edges
+// 0 -> don't connect, 2 dangling edges
 // 3 -> one dangling edge (because one side has more dangling edges)
 map<tuple<int, int, int>, vector<vector<uint8_t>>> initConnectWaysMap()
 {
@@ -272,16 +295,14 @@ map<tuple<int, int, int>, vector<vector<uint8_t>>> initConnectWaysMap()
     return map;
 }
 
-ColouringBitArray getCBAReducedComplement(ColouringBitArray cba, int len)
+string getCbaReducedComplement(string cbaString, int len)
 {
     auto ria = colouring_bit_array_internal::comparators[len].relevant_indices_absolute;
 
-    // complement
-    for (int i = 0; i < ria.size(); i++)
-    {
-        auto ii = ColouringBitArray::Index(ria[i]);
-        cba.set(ii, !cba.get(ii));
-    }
+    for (int i = 0; i < cbaString.size(); i++)
+        cbaString[i] = '0' + (cbaString[i] == '0');
+
+    ColouringBitArray cba = classCbaFromString(cbaString, len);
 
     // reduction
     bool good = false;
@@ -294,30 +315,31 @@ ColouringBitArray getCBAReducedComplement(ColouringBitArray cba, int len)
             if (cba.get(ii) && check_kempe_violation(cba, len, ria[i]))
             {
                 good = false;
-                cba.set(ii, false);
+                cbaString[i] = '0';
+                cba = classCbaFromString(cbaString, len);
             }
         }
     }
-    return cba;
+    return classCbaToString(cba, len);
 }
 
 // assumes cba is in c-equivalence
-std::string cToCs(std::string cba, int len = 6)
+string cToCs(string cba, int len = 6)
 {
     int riaCount = colouring_bit_array_internal::Comparator(len).relevant_indices_absolute.size();
 
-    std::vector<uint_fast8_t> temp;
+    vector<uint_fast8_t> temp;
     for (int i = 0; i < riaCount; i++)
         temp.push_back(cba[i] - '0');
     temp = canonize(from_canon(temp, len), len);
 
-    std::string cs = "";
+    string cs = "";
     for (int i = 0; i < riaCount; i++)
         cs += temp[i] + '0';
     return cs;
 }
 
-long long getReducedComplementFromCEq(long long num, std::vector<long long> &cEq)
+long long getReducedComplementFromCEq(long long num, vector<long long> &cEq)
 {
     num = FULL_CBA_6_NUM - num;
     long long best = 0;
@@ -329,14 +351,14 @@ long long getReducedComplementFromCEq(long long num, std::vector<long long> &cEq
         }
     }
 
-    return binaryToNumber(cToCs(numberToBinary(best, RIA_COUNT_6)));
+    return longLongCbaFromString(cToCs(longLongCbaToString(best, RIA_COUNT_6)));
 }
 
-void updateFoundCsk(const std::map<std::string, bool> &foundCsk6Map, const std::vector<std::string> &allCsk6AsStrings)
+void updateFoundCsk(const map<string, bool> &foundCsk6Map, const vector<string> &allCsk6AsStrings)
 {
-    std::ofstream foundCSKFileOutput;
+    ofstream foundCSKFileOutput;
     int foundCount = 0;
-    foundCSKFileOutput.open("txt/foundCSK" + std::to_string(6) + ".txt");
+    foundCSKFileOutput.open("txt/foundCSK" + to_string(6) + ".txt");
     for (long long i = 0; i < allCsk6AsStrings.size(); i++)
     {
         auto found = foundCsk6Map.at(allCsk6AsStrings[i]);
@@ -347,7 +369,7 @@ void updateFoundCsk(const std::map<std::string, bool> &foundCsk6Map, const std::
     foundCSKFileOutput.close();
 }
 
-int countOnes(std::string str)
+int countOnes(string str)
 {
     int count = 0;
     for (int i = 0; i < str.size(); i++)
