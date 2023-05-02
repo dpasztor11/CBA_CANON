@@ -2,6 +2,8 @@
 #include <iostream>
 #include "./../src/CBA/colouring_bit_array_canon.hpp"
 #include "./../src/CBA/kempe_closed.hpp"
+#include "./../src/helper.hpp"
+#include "./helper.cpp"
 
 using namespace ba_graph;
 
@@ -22,7 +24,7 @@ int main()
     std::vector<std::vector<int>> exp_power({{}, {1}, {2}, {1, 2}, {3}, {1, 3}, {2, 3}, {1, 2, 3}});
     assert(power == exp_power);
 
-    std::cout << "                  PASSED\n";
+    printPassed();
 
     /**************************
     is_weak_kempe_closed
@@ -43,7 +45,7 @@ int main()
     assert(is_weak_kempe_closed(from_canon(std::vector<uint_fast8_t>({1, 1, 0, 1}), 4), 4));
     assert(is_weak_kempe_closed(from_canon(std::vector<uint_fast8_t>({1, 0, 1, 1}), 4), 4));
     assert(is_weak_kempe_closed(from_canon(std::vector<uint_fast8_t>({0, 1, 1, 1}), 4), 4));
-    std::cout << "                  PASSED\n";
+    printPassed();
 
     /**************************
     is_kempe_closed
@@ -77,7 +79,6 @@ int main()
                                           {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}),
                                       6),
                            6));
-    std::cout << "                  PASSED\n";
-
+    printPassed();
     return 0;
 }

@@ -1,6 +1,7 @@
 #include <assert.h>
 #include "./../src/CBA/colouring_bit_array.h"
 #include "./../src/helper.hpp"
+#include "./helper.cpp"
 
 using namespace ba_graph;
 /*
@@ -17,6 +18,6 @@ int main()
 
     assert((mapColours(mapColours({1, 0, 0, 1, 2, 0}, 1), 1) == std::vector<uint_fast8_t>{1, 0, 0, 1, 2, 0}));
     assert((mapColours(mapColours(mapColours({1, 0, 0, 1, 2, 0}, 3), 3), 3) == std::vector<uint_fast8_t>{1, 0, 0, 1, 2, 0}));
-    std::cout << "                  PASSED\n";
+    printPassed();
     return 0;
 }
