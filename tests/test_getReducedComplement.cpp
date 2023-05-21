@@ -15,12 +15,11 @@ using namespace ba_graph;
 
     this test compares both ways of getting reducedComplement
     of each 6-pole CBA from c-equivalence
-
-    + some additional tests?
 */
 
 int main()
 {
+    std::cout << "getReducedComplement tests\n";
     auto ria = colouring_bit_array_internal::comparators[6].relevant_indices_absolute;
     auto cEq = getCEq(6, true);
     for (int i = 0; i < cEq.size(); i += 10007)

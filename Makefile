@@ -13,12 +13,6 @@ $(2): | createBuildFolders/$(1)
 	./build/$(1)/$(2).out
 endef
 
-#define generate_compile_test_rule
-#$(1):
-#	g++ $(FLAGS_RELEASE) tests/$(1).cpp -o build/$(1)/$(2).out -ltbb
-#	./build/$(1)/$(2).out
-#endef
-
 # Generates rules for all targets
 $(foreach target, $(FINDING_CBAS_TARGETS), $(eval $(call generate_compile_rule,findingCBAs,$(target))))
 $(foreach target, $(EQUIVALENCE_GENERATION_TARGETS), $(eval $(call generate_compile_rule,EquivalenceGeneration,$(target))))
@@ -41,12 +35,9 @@ test_reduced:
 	g++ $(FLAGS_DEBUG) tests/test_getReducedComplement.cpp -o build/test_getReducedComplement.out
 	./build/test_getReducedComplement.out
 
-test_connectCBAs:
-	g++ $(FLAGS_DEBUG) tests/test_connectCBAs.cpp -o build/test_connectCBAs.out
-	./build/test_connectCBAs.out
 
-5poles:
-	g++ $(FLAGS_DEBUG) -fconcepts -I../../Git/ba-graph/include 5polestest.cpp -o build/5polestest.out
-	./build/5polestest.out
+test_is_kempe_closed_union:
+	g++ $(FLAGS_DEBUG) tests/test_is_kempe_closed_union.cpp -o build/test_is_kempe_closed_union.out
+	./build/test_is_kempe_closed_union.out
 
 .PHONY: test 5poles test_kempe createBuildFolders/%

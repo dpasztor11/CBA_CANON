@@ -16,14 +16,11 @@
 #include <thread>
 #include <tuple>
 #include <vector>
-
-#ifndef TEST_MODE
 #include <execution>
-#endif
-
-using namespace ba_graph;
 
 std::mutex PROCESSING_CBA;
+
+using namespace ba_graph;
 
 const int MAX_ONES_IN_7_POLE = 20;
 // joining two 7poles to create a 7pole takes a long time
@@ -166,6 +163,7 @@ std::string connectCBAs(std::string cba1, int len1,
 std::string processFoundCBA(std::string cba, int len3)
 {
     PROCESSING_CBA.lock();
+
     if (len3 == 6)
     {
         if (foundC6Set.count(cba) == 0)
@@ -196,6 +194,7 @@ std::string processFoundCBA(std::string cba, int len3)
             }
         }
     }
+
     PROCESSING_CBA.unlock();
     return "";
 }
@@ -332,8 +331,6 @@ void fillUselessCsk7Set()
     }
 }
 
-#ifndef TEST_MODE
-
 int main()
 {
     getCanonsFromFile(6, csToCsk6CanonsMap);
@@ -392,5 +389,3 @@ int main()
     updateFoundCsk(isFoundCsk6Map, allCsk6AsStrings);
     return 0;
 }
-
-#endif
