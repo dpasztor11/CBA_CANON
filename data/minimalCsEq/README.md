@@ -1,1 +1,0 @@
-Minimal CBAs in respect to cs-equivalence.

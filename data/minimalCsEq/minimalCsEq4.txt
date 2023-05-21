@@ -1,4 +1,0 @@
-MinimalfeasibleCBA:
-Count: 2
-0110
-0011
