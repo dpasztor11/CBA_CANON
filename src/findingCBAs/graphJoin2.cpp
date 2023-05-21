@@ -24,28 +24,12 @@ std::set<std::string> foundC6Set;
 std::map<std::string, std::string> csToCsk6CanonsMap;
 
 std::vector<long long> cskEq6;
-std::map<std::vector<uint8_t>, int> toRia6;
+std::map<std::vector<uint_fast8_t>, uint_fast8_t> toRia6;
 
 std::vector<std::string> foundCsk6AsStrings;
 
 int count6 = 0;
 int cskFound = 115;
-
-// assumes cba is in c-equivalence
-std::string cToCskEq6(std::string c)
-{
-    // c -> cs
-    std::vector<uint_fast8_t> temp;
-    for (int i = 0; i < riaArr6.size(); i++)
-        temp.push_back(c[i] - '0');
-    temp = canonize(from_canon(temp, 6), 6);
-    std::string cs = "";
-    for (int i = 0; i < riaArr6.size(); i++)
-        cs += temp[i] + '0';
-
-    // cs -> csk
-    return csToCsk6CanonsMap[cs];
-}
 
 std::vector<uint8_t> recolour(std::vector<uint8_t> tuple, int permIndex)
 {
@@ -223,7 +207,7 @@ Result joinWithSupergraph(std::vector<std::string> cbas,
     if (foundC6Set.count(sol) == 0)
     {
         foundC6Set.insert(sol);
-        std::string csk = cToCskEq6(sol);
+        std::string csk = cToCsk(sol, csToCsk6CanonsMap);
         if (!foundCsk6Map[csk])
         {
             foundCsk6Map[csk] = true;

@@ -216,7 +216,7 @@ void storeCbasToFile(string fileName, vector<long long> cbas, int vectorSize)
     file.close();
 }
 
-void calculateToRia(map<vector<uint8_t>, int> &mapToFill, int len = 6)
+void calculateToRia(map<vector<uint_fast8_t>, uint_fast8_t> &mapToFill, int len = 6)
 {
     vector<vector<uint_fast8_t>> ria = colouring_bit_array_internal::Comparator(len).relevant_indices_absolute;
     for (int i = 0; i < ria.size(); i++)
@@ -339,6 +339,12 @@ string cToCs(string cba, int len = 6)
     for (int i = 0; i < riaCount; i++)
         cs += temp[i] + '0';
     return cs;
+}
+
+// assumes cba is in c-equivalence
+string cToCsk(string cba, std::map<std::string, std::string> &csToCsk6CanonsMap)
+{
+    return csToCsk6CanonsMap[cToCs(cba)];
 }
 
 long long getReducedComplementFromCEq(long long num, vector<long long> &cEq)

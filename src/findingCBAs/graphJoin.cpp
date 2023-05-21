@@ -4,7 +4,6 @@
 #include <iostream>
 #include <algorithm>
 #include <utility>
-#include <execution>
 #include <fstream>
 #include <set>
 #include <map>
@@ -12,6 +11,10 @@
 #include <thread>
 #include <tuple>
 #include <vector>
+
+#ifndef TEST_MODE
+#include <execution>
+#endif
 
 using namespace ba_graph;
 
@@ -24,7 +27,7 @@ const std::vector<std::vector<uint8_t>> riaArr6 = colouring_bit_array_internal::
 const std::vector<std::vector<uint8_t>> riaArr5 = colouring_bit_array_internal::Comparator(5).relevant_indices_absolute;
 const std::vector<std::vector<uint8_t>> riaArr4 = colouring_bit_array_internal::Comparator(4).relevant_indices_absolute;
 
-std::map<std::string, bool> foundCsk6Map;
+std::map<std::string, bool> isFoundCsk6Map;
 std::set<std::string> foundCsk7Set;
 std::set<std::string> foundC7Set;
 std::set<std::string> foundC6Set;
@@ -34,8 +37,8 @@ std::vector<long long> cskEq6;
 std::vector<long long> cskEq5;
 std::vector<long long> cskEq4;
 
-std::map<std::vector<uint8_t>, int> toRia6;
-std::map<std::vector<uint8_t>, int> toRia7;
+std::map<std::vector<uint_fast8_t>, uint_fast8_t> toRia6;
+std::map<std::vector<uint_fast8_t>, uint_fast8_t> toRia7;
 
 // vector of all ways we can connect a-pole and b-pole to get c-pole
 std::map<std::tuple<int, int, int>, std::vector<std::vector<uint8_t>>> connectWaysMap;
@@ -49,12 +52,6 @@ int count6 = 0;
 int count7 = 0;
 
 int cskCount = 115;
-
-// assumes cba is in c-equivalence
-std::string cToCskEq6(std::string c)
-{
-    return csToCsk6CanonsMap[cToCs(c)];
-}
 
 // assumes cba is in c-equivalence
 std::string cToCskEq7(std::string c)
@@ -82,6 +79,9 @@ std::string connectCBAs(std::string cba1, int len1,
                         std::string cba2, int len2, int len3,
                         std::vector<uint_fast8_t> &connectOrder, std::vector<uint_fast8_t> &connectWay)
 {
+    if (len3 != 6 && len3 != 7)
+        throw invalid_argument("Invalid len3 argument");
+
     auto riaArr = colouring_bit_array_internal::Comparator(len1).relevant_indices_absolute;
     auto riaArr2 = colouring_bit_array_internal::Comparator(len2).relevant_indices_absolute;
     auto riaArr3 = colouring_bit_array_internal::Comparator(len3).relevant_indices_absolute;
@@ -90,14 +90,11 @@ std::string connectCBAs(std::string cba1, int len1,
     std::vector<uint8_t> createdTuple;
     auto toRia = (len3 == 6 ? toRia6 : toRia7);
 
-    std::string sol = "";
-    for (int i = 0; i < riaArr3.size(); i++)
-        sol += "0";
+    std::string sol = len3 == 6 ? EMPTY_CBA_6 : EMPTY_CBA_7;
 
     // we will check all boundary colourings
     for (long long ria1 = 0; ria1 < riaArr.size(); ria1++)
     {
-        // sleep(1);
         if (cba1[ria1] == '0')
             continue;
 
@@ -161,10 +158,10 @@ std::string processFoundCBA(std::string cba, int len3)
         if (foundC6Set.count(cba) == 0)
         {
             foundC6Set.insert(cba);
-            std::string csk = cToCskEq6(cba);
-            if (!foundCsk6Map[csk])
+            std::string csk = cToCsk(cba, csToCsk6CanonsMap);
+            if (!isFoundCsk6Map[csk])
             {
-                foundCsk6Map[csk] = true;
+                isFoundCsk6Map[csk] = true;
                 count6++;
                 foundCsk6AsStrings.push_back(csk);
                 return csk;
@@ -255,7 +252,7 @@ void printProgress(int i, int j)
 int main()
 {
     getCanonsFromFile(6, csToCsk6CanonsMap);
-    getFoundCskMapFromFile(6, foundCsk6Map);
+    getFoundCskMapFromFile(6, isFoundCsk6Map);
     cskEq6 = getCskEq(6, true);
     cskEq5 = getCskEq(5, true);
     cskEq4 = getCskEq(4, true);
@@ -269,7 +266,7 @@ int main()
     {
         std::string cskString = longLongCbaToString(cskEq6[i], riaArr6.size());
         allCsk6AsStrings.push_back(cskString);
-        if (foundCsk6Map[cskString])
+        if (isFoundCsk6Map[cskString])
             foundCsk6AsStrings.push_back(cskString);
     }
 
@@ -305,7 +302,7 @@ int main()
         }
     }
 
-    updateFoundCsk(foundCsk6Map, allCsk6AsStrings);
+    updateFoundCsk(isFoundCsk6Map, allCsk6AsStrings);
     return 0;
 }
 
