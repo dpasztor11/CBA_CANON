@@ -1,3 +1,7 @@
+//
+// this code finds CBAs from cs-eq not covered by already found csk-eq representatives
+//
+
 #include <iostream>
 #include "./../CBA/colouring_bit_array_canon.hpp"
 #include "./../CBA/kempe_closed.hpp"
@@ -13,14 +17,14 @@ int main()
     getFoundCskMapFromFile(6, foundCsk6Map);
     auto csEq = getCsEq(6, true);
     int count = 0;
-    std::vector<int> csNotFound;
+    std::vector<std::string> csNotFound;
     for (int i = 0; i < csEq.size(); i++)
     {
         std::string cs = longLongCbaToString(csEq[i], 31);
-        if (!foundCsk6Map[csToCsk6CanonsMap[cToCs(cs)]])
+        if (!foundCsk6Map[csToCsk6CanonsMap[cs]])
         {
             count++;
-            csNotFound.push_back(countOnes(cs));
+            csNotFound.push_back(cs);
         }
     }
     sort(csNotFound.begin(), csNotFound.end());
@@ -28,4 +32,6 @@ int main()
     {
         std::cout << csNotFound[i] << std::endl;
     }
+    std::cout << count << std::endl;
+    return 0;
 }
