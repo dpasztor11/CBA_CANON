@@ -1,3 +1,8 @@
+/*
+    Connects 2 cbas from csk-equivalence
+    Uses 4,5,6,7-poles
+*/
+
 #include "./../CBA/colouring_bit_array_canon.hpp"
 #include "./../CBA/kempe_closed.hpp"
 #include "./../helper.hpp"
@@ -18,6 +23,8 @@
 
 using namespace ba_graph;
 
+std::mutex PROCESSING_CBA;
+
 const int MAX_ONES_IN_7_POLE = 20;
 // joining two 7poles to create a 7pole takes a long time
 const bool ALLOW_7x7_TO_7 = false;
@@ -29,6 +36,8 @@ const std::vector<std::vector<uint8_t>> riaArr4 = colouring_bit_array_internal::
 
 std::map<std::string, bool> isFoundCsk6Map;
 std::set<std::string> foundCsk7Set;
+// 7-poles that can be split into a 2-pole + 5-pole or 3-pole + 4-pole
+std::set<std::string> uselessCsk7Set;
 std::set<std::string> foundC7Set;
 std::set<std::string> foundC6Set;
 std::map<std::string, std::string> csToCsk6CanonsMap;
@@ -56,9 +65,12 @@ int cskCount = 115;
 // assumes cba is in c-equivalence
 std::string cToCskEq7(std::string c)
 {
-    std::string cs = cToCs(c);
-    std::string csk = getCbaReducedComplement(cs, 7);
-    return csk;
+    std::string csk = getCbaReducedComplement(c, 7);
+
+    for (int i = 0; i < csk.size(); i++)
+        csk[i] = '0' + (csk[i] == '0');
+
+    return cToCs(csk, 7);
 }
 
 void log(std::string csk, std::string c, std::string cba1, std::string cba2,
@@ -153,6 +165,7 @@ std::string connectCBAs(std::string cba1, int len1,
 
 std::string processFoundCBA(std::string cba, int len3)
 {
+    PROCESSING_CBA.lock();
     if (len3 == 6)
     {
         if (foundC6Set.count(cba) == 0)
@@ -170,18 +183,20 @@ std::string processFoundCBA(std::string cba, int len3)
     }
     else if (len3 == 7)
     {
-        if (foundC7Set.count(cba) == 0)
+        if (countOnes(cba) <= MAX_ONES_IN_7_POLE && foundC7Set.count(cba) == 0)
         {
             foundC7Set.insert(cba);
-            std::string cs = cToCs(cba, 7);
-            if (foundCsk7Set.count(cs) == 0 && countOnes(cs) <= MAX_ONES_IN_7_POLE)
+            std::string csk = cToCskEq7(cba);
+
+            if (!uselessCsk7Set.count(csk) && foundCsk7Set.count(csk) == 0)
             {
-                foundCsk7Set.insert(cs);
+                foundCsk7Set.insert(csk);
                 count7++;
-                foundCsk7AsStrings.push_back(cs);
+                foundCsk7AsStrings.push_back(csk);
             }
         }
     }
+    PROCESSING_CBA.unlock();
     return "";
 }
 
@@ -227,17 +242,39 @@ void connectWithAll4And5Poles(std::string cba, int len)
 
 void connectWithPrevious6And7Poles(std::string cba, int len, int last6poleIndex, int last7poleIndex)
 {
+    std::vector<int> toCompute;
+
     for (int k = 0; k <= last6poleIndex; k++)
-    {
-        connectCBAsAllWays(cba, len, foundCsk6AsStrings[k], 6, 6);
-        connectCBAsAllWays(cba, len, foundCsk6AsStrings[k], 6, 7);
-    }
+        toCompute.push_back(k);
+
+    std::for_each(
+        std::execution::par,
+        toCompute.begin(),
+        toCompute.end(),
+        [cba, len, last6poleIndex](int &index)
+        {
+            if (len != 6 || last6poleIndex >= 114)
+            {
+                connectCBAsAllWays(cba, len, foundCsk6AsStrings[index], 6, 6);
+            }
+            connectCBAsAllWays(cba, len, foundCsk6AsStrings[index], 6, 7);
+        });
+
+    toCompute = {};
+
     for (int k = 0; k <= last7poleIndex; k++)
-    {
-        connectCBAsAllWays(foundCsk7AsStrings[k], 7, cba, len, 6);
-        if (len != 7 || ALLOW_7x7_TO_7)
-            connectCBAsAllWays(foundCsk7AsStrings[k], 7, cba, len, 7);
-    }
+        toCompute.push_back(k);
+
+    std::for_each(
+        std::execution::par,
+        toCompute.begin(),
+        toCompute.end(),
+        [cba, len](int &index)
+        {
+            connectCBAsAllWays(foundCsk7AsStrings[index], 7, cba, len, 6);
+            if (len != 7 || ALLOW_7x7_TO_7)
+                connectCBAsAllWays(foundCsk7AsStrings[index], 7, cba, len, 7);
+        });
 }
 
 void printProgress(int i, int j)
@@ -245,6 +282,54 @@ void printProgress(int i, int j)
     std::cout << "6-poles: " << i << "/" << foundCsk6AsStrings.size() << std::endl;
     std::cout << "7-poles: " << j << "/" << foundCsk7AsStrings.size() << std::endl;
     std::cout << "-----------------------------------------" << std::endl;
+}
+
+void fillUselessCsk7Set()
+{
+    // 5+2
+    for (int i = 0; i < cskEq5.size(); i++)
+    {
+        std::string csk7 = EMPTY_CBA_7;
+        for (int j = 0; j < riaArr5.size(); j++)
+        {
+            if (longLongCbaToString(cskEq5[i], riaArr5.size())[j] == '0')
+                continue;
+
+            // colour disconnected edge all colours
+            for (int c = 0; c < 3; c++)
+            {
+                auto newTuple = riaArr5[j];
+                newTuple.push_back(c);
+                newTuple.push_back(c);
+                csk7[toRia7[newTuple]] = '1';
+            }
+        }
+        uselessCsk7Set.insert(cToCskEq7(csk7));
+    }
+
+    // 4+3
+    for (int i = 0; i < cskEq4.size(); i++)
+    {
+        std::string csk7 = EMPTY_CBA_7;
+        for (int j = 0; j < riaArr4.size(); j++)
+        {
+            if (longLongCbaToString(cskEq4[i], riaArr4.size())[j] == '0')
+                continue;
+
+            // colour disconnected 3-pole with
+            // all permutations of 3 colours
+            for (int c = 0; c < 6; c++)
+            {
+                auto newTuple = riaArr5[j];
+                newTuple.push_back(PERMS_3[c][0]);
+                newTuple.push_back(PERMS_3[c][1]);
+                newTuple.push_back(PERMS_3[c][2]);
+                csk7[toRia7[newTuple]] = '1';
+            }
+        }
+
+        uselessCsk7Set.insert(cToCskEq7(csk7));
+    }
 }
 
 #ifndef TEST_MODE
@@ -260,6 +345,8 @@ int main()
     calculateToRia(toRia7, 7);
 
     connectWaysMap = initConnectWaysMap();
+
+    fillUselessCsk7Set();
 
     std::vector<std::string> allCsk6AsStrings;
     for (long long i = 0; i < (long long)cskEq6.size(); i++)
@@ -287,7 +374,7 @@ int main()
         connectWithPrevious6And7Poles(foundCsk6AsStrings[i], 6, i, j - 1);
         if (i + 1 == foundCsk6AsStrings.size())
         {
-            std::cout << "!!!switching to 7-poles!!!" << std::endl;
+            // switching to 7-poles
             for (; j < foundCsk7AsStrings.size(); j++)
             {
                 printProgress(i, j);

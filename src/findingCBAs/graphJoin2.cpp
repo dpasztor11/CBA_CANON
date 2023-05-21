@@ -1,3 +1,10 @@
+/*
+    Can connect any number of cbas together
+    We have several "supergraphs" such that each node represents one cba
+
+    We generate random cbas for each node and a random way to reshuffle the edges to create a new 6-pole
+*/
+
 #include "./../CBA/colouring_bit_array_canon.hpp"
 #include "./../CBA/kempe_closed.hpp"
 #include "./../helper.hpp"
@@ -24,6 +31,7 @@ std::set<std::string> foundC6Set;
 std::map<std::string, std::string> csToCsk6CanonsMap;
 
 std::vector<long long> cskEq6;
+std::vector<long long> csEq6;
 std::map<std::vector<uint_fast8_t>, uint_fast8_t> toRia6;
 
 std::vector<std::string> foundCsk6AsStrings;
@@ -49,26 +57,6 @@ std::vector<uint8_t> permutate(std::vector<uint8_t> vec, std::vector<uint8_t> pe
     return sol;
 }
 
-/*
-void logFoundCsk(std::vector<std::string> old, std::string neww, std::string newwCsk, std::vector<std::vector<uint8_t>> perm6s)
-{
-    ofstream file;
-    file.open("txt/foundCSK/CSK6FindingsLogger.txt", std::ios_base::app);
-    cskFound++;
-    file << cskFound << ". " << newwCsk << "\n";
-    file << " c: " << neww << " from:\n";
-    for (int i = 0; i < old.size(); i++)
-    {
-        file << " " << old[i] << std::endl;
-    }
-    file << " permutations: ";
-    for (int i = 0; i < perm6s.size(); i++)
-    {
-        printVec(perm6s[i], file);
-    }
-}
-*/
-
 std::string createMessage(const std::vector<std::string> &cbas,
                           const std::vector<std::vector<uint_fast8_t>> &perms,
                           const std::vector<std::vector<std::tuple<int, int, int>>> &supergraph,
@@ -80,7 +68,7 @@ std::string createMessage(const std::vector<std::string> &cbas,
     {
         message += cba + ",";
     }
-    message.pop_back(); // Remove the last comma
+    message.pop_back();
     message += "]\nperms: [\n";
     for (const auto &perm : perms)
     {
@@ -89,10 +77,10 @@ std::string createMessage(const std::vector<std::string> &cbas,
         {
             message += std::to_string(p) + ",";
         }
-        message.pop_back(); // Remove the last comma
+        message.pop_back();
         message += "],\n";
     }
-    message.pop_back(); // Remove the last comma and newline
+    message.pop_back();
     message.pop_back();
     message += "\nsupergraph: [\n";
     for (const auto &sg : supergraph)
@@ -102,10 +90,10 @@ std::string createMessage(const std::vector<std::string> &cbas,
         {
             message += "(" + std::to_string(std::get<0>(t)) + "," + std::to_string(std::get<1>(t)) + "," + std::to_string(std::get<2>(t)) + "),";
         }
-        message.pop_back(); // Remove the last comma
+        message.pop_back();
         message += "],\n";
     }
-    message.pop_back(); // Remove the last comma and newline
+    message.pop_back();
     message.pop_back();
     message += "\n]vertexCount: " + std::to_string(vertexCount) + "\n";
     return message;
@@ -212,8 +200,6 @@ Result joinWithSupergraph(std::vector<std::string> cbas,
         {
             foundCsk6Map[csk] = true;
             count6++;
-            std::cout << count6 << ". 6 sol found!!! " << csk << std::endl;
-            std::cout << "from " << sol << std::endl;
             foundCsk6AsStrings.push_back(csk);
             result.logMessage = createMessage(cbas, perms, supergraph, vertexCount);
             result.newFoundCsk = csk;
@@ -249,16 +235,6 @@ std::vector<std::string> getRandomCsks(std::mt19937 &generator, int count)
     return cbas;
 }
 
-/*
-const std::vector<std::pair<int, std::vector<std::pair<int, int>>>> supergraphs = {
-    // vertexCount, edges
-    {3, {{0, 1}, {0, 1}, {1, 2}, {1, 2}, {0, 2}, {0, 2}}},                         // 222
-    {4, {{0, 1}, {0, 1}, {1, 3}, {1, 3}, {0, 2}, {0, 2}, {2, 3}, {2, 3}, {0, 3}}}, // 22221
-    {4, {{0, 1}, {1, 2}, {1, 3}, {1, 3}, {0, 2}, {0, 2}, {2, 3}, {2, 3}, {0, 3}}}, // 222111a
-    {4, {{0, 1}, {1, 2}, {1, 2}, {1, 3}, {0, 2}, {0, 2}, {2, 3}, {2, 3}, {0, 3}}}, // 222111b
-};
-*/
-
 // [node] = {(edge, node2, edge2), ...}
 // danglingEdge = (edge, -1, -1)
 // edges are one-directional, from node A to B iff A > B
@@ -293,6 +269,7 @@ int main()
     getCanonsFromFile(6, csToCsk6CanonsMap);
     getFoundCskMapFromFile(6, foundCsk6Map);
     cskEq6 = getCskEq(6, true);
+    csEq6 = getCsEq(6, true);
     calculateToRia(toRia6, 6);
 
     std::vector<std::string> allCsk6AsStrings;
@@ -306,7 +283,7 @@ int main()
 
     std::cout << "initial size: " << foundCsk6AsStrings.size() << std::endl;
 
-    std::random_device rd;        // obtain a random number from hardware
+    std::random_device rd;
     std::mt19937 generator(rd()); // seed the generator
 
     int done = 0;
@@ -326,7 +303,7 @@ int main()
             toCompute.end(),
             [&generator](std::pair<int, Result> &p)
             {
-                auto supergraph = supergraphs[0 /*p.first % supergraphs.size()*/];
+                auto supergraph = supergraphs[p.first % supergraphs.size()];
                 int vertexCount = supergraph.size();
                 auto cbas = getRandomCsks(generator, vertexCount);
                 auto perms = getRandomPermutations(6, generator, vertexCount);
