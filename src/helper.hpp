@@ -20,6 +20,7 @@ const string EMPTY_CBA_7 = "0000000000000000000000000000000000000000000000000000
 const string FULL_CBA_7 = "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
 
 const int RIA_COUNT_6 = colouring_bit_array_internal::Comparator(6).relevant_indices_absolute.size();
+const int RIA_COUNT_7 = colouring_bit_array_internal::Comparator(7).relevant_indices_absolute.size();
 const long long FULL_CBA_6_NUM = (1 << RIA_COUNT_6) - 1;
 
 //
@@ -71,6 +72,40 @@ string classCbaToString(ColouringBitArray &cba, int len)
 {
     std::vector<uint_fast8_t> stringCba = canonize(cba, len);
     return vectorCbaToString(stringCba);
+}
+
+// in another similar work, cEquivalence is also used,
+// but with a different order of representatives
+// this maps ours representation to theirs
+const int indexMapping[31] =
+    {15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+     14, 13, 12, 11, 10, 9, 8, 5, 2, 7, 6, 4, 1, 3, 0, 30};
+
+// this maps theirs -> ours
+const int inverseIndexMapping[31] =
+    {29, 27, 23, 28, 26, 22, 25, 24, 21, 20, 19, 18, 17, 16, 15,
+     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 30};
+
+string cbaToOurRep(string cba)
+{
+    string transformed = EMPTY_CBA_6;
+    for (int i = 0; i < 31; i++)
+    {
+        if (cba[i] == '1')
+            transformed[inverseIndexMapping[i]] = '1';
+    }
+    return transformed;
+}
+
+string cbaToTheirRep(string cba)
+{
+    string transformed = EMPTY_CBA_6;
+    for (int i = 0; i < 31; i++)
+    {
+        if (cba[i] == '1')
+            transformed[indexMapping[i]] = '1';
+    }
+    return transformed;
 }
 
 // use map f: {0, 1, 2} -> {0, 1, 2} on tuple
