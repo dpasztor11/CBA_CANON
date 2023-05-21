@@ -184,17 +184,17 @@ vector<long long> getFromFile(int len, int count, int linesToSkip, string filePa
 
 vector<long long> getCEq(int len, bool withZeroVector)
 {
-    return getFromFile(len, getCEqCount(len) - !withZeroVector, !withZeroVector + 1, "txt/cEquivalence/cEq" + to_string(len) + ".txt");
+    return getFromFile(len, getCEqCount(len) - !withZeroVector, !withZeroVector + 1, "data/cEquivalence/cEq" + to_string(len) + ".txt");
 }
 
 vector<long long> getCsEq(int len, bool withZeroVector)
 {
-    return getFromFile(len, getCsEqCount(len) - !withZeroVector, !withZeroVector + 1, "txt/csEquivalence/csEq" + to_string(len) + ".txt");
+    return getFromFile(len, getCsEqCount(len) - !withZeroVector, !withZeroVector + 1, "data/csEquivalence/csEq" + to_string(len) + ".txt");
 }
 
 vector<long long> getCskEq(int len, bool withZeroVector)
 {
-    return getFromFile(len, getCskEqCount(len) - !withZeroVector, !withZeroVector, "txt/reducedComplementCBA/reducedComplementCBARaw" + to_string(len) + ".txt");
+    return getFromFile(len, getCskEqCount(len) - !withZeroVector, !withZeroVector, "data/reducedComplementCBA/reducedComplementCBARaw" + to_string(len) + ".txt");
 }
 
 // maps cs-equivalent CBA to its canonical csk-equivalent CBA
