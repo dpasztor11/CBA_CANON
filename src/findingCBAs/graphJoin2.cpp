@@ -259,7 +259,7 @@ const std::vector<std::vector<std::vector<std::tuple<int, int, int>>>> supergrap
 void logMessage(std::string message)
 {
     ofstream file;
-    file.open("txt/foundCSK/CSK6FindingsLogger.txt", std::ios_base::app);
+    file.open("data/foundCSK/CSK6FindingsLogger.txt", std::ios_base::app);
     file << message;
     file.close();
 }

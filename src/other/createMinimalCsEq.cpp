@@ -19,7 +19,7 @@ int main()
     std::vector<long long> minimalCsEq;
 
     std::ofstream minimalCsEqFile;
-    std::string minimalCsEqFileString = "txt/minimalCsEq/minimalCsEq" + std::to_string(len) + ".txt";
+    std::string minimalCsEqFileString = "data/minimalCsEq/minimalCsEq" + std::to_string(len) + ".txt";
     minimalCsEqFile.open(minimalCsEqFileString);
     minimalCsEqFile << "MinimalCsEq:" << std::endl;
 

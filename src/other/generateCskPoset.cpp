@@ -146,7 +146,7 @@ int main()
     }
 
     ofstream canonFile;
-    canonFile.open("txt/poset/poset6.txt");
+    canonFile.open("data/poset/poset6.txt");
 
     // A is aboveZero iff 0 <= A and there is no B such that 0 <= B <= A
     int aboveZero = 0;

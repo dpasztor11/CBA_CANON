@@ -250,7 +250,7 @@ int main()
 
     // write foundCSK
     std::ofstream foundCSKFileOutput;
-    foundCSKFileOutput.open("txt/foundCSK" + std::to_string(maxlen) + ".txt");
+    foundCSKFileOutput.open("data/foundCSK" + std::to_string(maxlen) + ".txt");
     long totalFound = 0;
     for (long long i = 0; i < cskCount; i++)
     {

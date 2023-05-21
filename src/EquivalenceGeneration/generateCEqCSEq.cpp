@@ -14,11 +14,11 @@ const int riaCount = colouring_bit_array_internal::Comparator(len).len; // relev
 int main()
 {
     std::ofstream csEqFile;
-    csEqFile.open("txt/csEq" + std::to_string(len) + ".txt");
+    csEqFile.open("data/csEq" + std::to_string(len) + ".txt");
     csEqFile << "CS-equivalence:" << std::endl;
 
     std::ofstream cEqFile;
-    cEqFile.open("txt/cEq" + std::to_string(len) + ".txt");
+    cEqFile.open("data/cEq" + std::to_string(len) + ".txt");
     cEqFile << "C-equivalence:" << std::endl;
 
     const auto &cmp = colouring_bit_array_internal::comparators[len];

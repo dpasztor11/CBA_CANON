@@ -77,7 +77,7 @@ void log(std::string csk, std::string c, std::string cba1, std::string cba2,
          std::vector<uint_fast8_t> connectWay, std::vector<uint_fast8_t> connectOrder)
 {
     ofstream file;
-    file.open("txt/foundCSK/CSK6FindingsLogger.txt", std::ios_base::app);
+    file.open("data/foundCSK/CSK6FindingsLogger.txt", std::ios_base::app);
     file << cskCount << ". " << csk << std::endl;
     file << cskCount << " c: " << c << std::endl;
     file << " from: " << cba1 << " and " << cba2 << std::endl;

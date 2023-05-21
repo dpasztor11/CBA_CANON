@@ -29,7 +29,7 @@ int main()
 
     // canons
     std::ofstream canonsFile;
-    canonsFile.open("txt/canons" + std::to_string(len) + ".txt");
+    canonsFile.open("data/canons" + std::to_string(len) + ".txt");
 
     std::map<long long, long long> reducedComplementToIndex;
 
@@ -55,9 +55,9 @@ int main()
     std::ofstream reducedComplementCBAFile;
     std::ofstream reducedComplementCBARawFile;
     std::ofstream foundCSKFile;
-    reducedComplementCBAFile.open("txt/reducedComplementCBA/reducedComplementCBA" + std::to_string(len) + ".txt");
-    reducedComplementCBARawFile.open("txt/reducedComplementCBA/reducedComplementCBARaw" + std::to_string(len) + ".txt");
-    foundCSKFile.open("txt/foundCSK/foundCSK" + std::to_string(len) + ".txt");
+    reducedComplementCBAFile.open("data/reducedComplementCBA/reducedComplementCBA" + std::to_string(len) + ".txt");
+    reducedComplementCBARawFile.open("data/reducedComplementCBA/reducedComplementCBARaw" + std::to_string(len) + ".txt");
+    foundCSKFile.open("data/foundCSK/foundCSK" + std::to_string(len) + ".txt");
     reducedComplementCBAFile << "ReducedComplementCBA:" << std::endl;
     reducedComplementCBAFile << "Count: " << reducedCsEq.size() << std::endl;
     reducedComplementCBAFile << "csEqCBA | complement | reduced complement" << std::endl;

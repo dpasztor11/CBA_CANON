@@ -201,7 +201,7 @@ vector<long long> getCskEq(int len, bool withZeroVector)
 void getCanonsFromFile(int len, map<string, string> &canonsMap)
 {
     ifstream canonFile;
-    canonFile.open("txt/canons/canons" + to_string(len) + ".txt");
+    canonFile.open("data/canons/canons" + to_string(len) + ".txt");
     string temp1, temp2;
     for (long long i = 0; i < getCsEqCount(len); i++)
     {
@@ -217,7 +217,7 @@ void getCanonsFromFile(int len, map<string, string> &canonsMap)
 void getFoundCskVectorFromFile(int len, vector<pair<string, bool>> &foundCsk)
 {
     ifstream foundCskFile;
-    foundCskFile.open("txt/foundCSK/foundCSK" + to_string(len) + ".txt");
+    foundCskFile.open("data/foundCSK/foundCSK" + to_string(len) + ".txt");
     string temp1, temp2;
     for (long long i = 0; i < getCskEqCount(len); i++)
     {
@@ -231,7 +231,7 @@ void getFoundCskVectorFromFile(int len, vector<pair<string, bool>> &foundCsk)
 void getFoundCskMapFromFile(int len, map<string, bool> &foundCskMap)
 {
     ifstream foundCskFile;
-    foundCskFile.open("txt/foundCSK/foundCSK" + to_string(len) + ".txt");
+    foundCskFile.open("data/foundCSK/foundCSK" + to_string(len) + ".txt");
     string temp1, temp2;
     for (long long i = 0; i < getCskEqCount(len); i++)
     {
@@ -401,7 +401,7 @@ void updateFoundCsk(const map<string, bool> &foundCsk6Map, const vector<string> 
 {
     ofstream foundCSKFileOutput;
     int foundCount = 0;
-    foundCSKFileOutput.open("txt/foundCSK" + to_string(6) + ".txt");
+    foundCSKFileOutput.open("data/foundCSK" + to_string(6) + ".txt");
     for (long long i = 0; i < allCsk6AsStrings.size(); i++)
     {
         auto found = foundCsk6Map.at(allCsk6AsStrings[i]);
