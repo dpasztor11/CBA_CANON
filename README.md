@@ -7,9 +7,15 @@ Cubic k-pole P is a graph that has k ordered vertices of degree one and remainin
 src/CBA - Colouring Bit Array and helper functions  
 src/EquivalenceGeneration - code for generating equivalence representatives  
 src/findingCBAs - code for realisation of csk-representatives  
-\*/old, generateCSKSolutions(2), CBA/ - some code made earlier by my supervisor
+\*/old, CBA/ - some code made earlier by my supervisor  
+generateCSKSolutions, generateCSKSolutions2 - code made by my supervisor, slightly modified by me
 
 Important data used by various programs is stored in data folder.
+
+Some lists are named differently then in my thesis:  
+csk-equivalence -> sk-equivalence representatives
+cs-equivalence -> s-equivalence representatives
+c-equivalence -> plausible CBAs
 
 # Terminology
 
